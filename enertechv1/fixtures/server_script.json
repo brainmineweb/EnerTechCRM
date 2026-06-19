@@ -123,7 +123,7 @@
   "doctype_event": "After Submit",
   "enable_rate_limit": 0,
   "event_frequency": "All",
-  "modified": "2026-06-13 11:19:55.641374",
+  "modified": "2026-06-19 15:55:20.895162",
   "module": "EnerTechv1",
   "name": "Quotation Sending to Mail After Submit",
   "rate_limit_count": 5,
