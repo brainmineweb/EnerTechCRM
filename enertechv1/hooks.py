@@ -13,7 +13,6 @@ fixtures = [
     "Property Setter",
     "Client Script",
     "Server Script",
-    "Custom Script",
     "Workspace",
     "Web Page",
     "Print Format",
