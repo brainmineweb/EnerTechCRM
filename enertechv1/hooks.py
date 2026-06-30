@@ -9,7 +9,20 @@ app_license = "mit"
 
 # Fixtures to export and include with the app
 fixtures = [
-    "Custom Field",
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["dt", "in", [
+                "Lead",
+                "Quotation",
+                "Quotation Item",
+                "Opportunity",
+                "Sales Order",
+                "Sales Order Item"
+            ]],
+            ["is_system_generated", "=", 0]
+        ]
+    },
     "Property Setter",
     "Client Script",
     "Server Script",
@@ -258,4 +271,3 @@ fixtures = [
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

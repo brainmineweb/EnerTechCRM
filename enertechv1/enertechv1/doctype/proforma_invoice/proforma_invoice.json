@@ -1,0 +1,302 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-06-30 12:19:47.779246",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_vz7h",
+  "naming_series",
+  "column_break_asjh",
+  "quotation",
+  "column_break_ffpf",
+  "date",
+  "consignee_details_section",
+  "customer",
+  "consignee_gstin",
+  "customer_name",
+  "column_break_ltog",
+  "consignee_address",
+  "section_break_pkwm",
+  "buyer_same_as_consignee",
+  "buyer_name",
+  "buyer_gstin",
+  "column_break_afbj",
+  "buyers_order_no",
+  "buyers_order_date",
+  "column_break_fief",
+  "address",
+  "dispatch_and_references_section",
+  "delivery_note",
+  "dispatched_through",
+  "freight_terms",
+  "column_break_hdqp",
+  "suppliers_ref",
+  "warranty",
+  "other_references",
+  "column_break_pkdg",
+  "delivery_date",
+  "modeterms_of_payment",
+  "items_section",
+  "table_wyea",
+  "totals_section",
+  "column_break_lurb",
+  "column_break_wass",
+  "column_break_asfz",
+  "total",
+  "balance_payment",
+  "advance_payment",
+  "section_break_eaqt",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_vz7h",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "EUPL/.YY.-.####;"
+  },
+  {
+   "fieldname": "column_break_asjh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "options": "Quotation"
+  },
+  {
+   "fieldname": "column_break_ffpf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "consignee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Consignee Details"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "consignee_gstin",
+   "fieldtype": "Data",
+   "label": "Consignee GSTIN"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "column_break_ltog",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "consignee_address",
+   "fieldtype": "Small Text",
+   "label": "Consignee Address"
+  },
+  {
+   "fieldname": "section_break_pkwm",
+   "fieldtype": "Section Break",
+   "label": "Buyer Details"
+  },
+  {
+   "default": "1",
+   "fieldname": "buyer_same_as_consignee",
+   "fieldtype": "Check",
+   "label": "Buyer same as consignee"
+  },
+  {
+   "depends_on": "eval:!doc.buyer_same_as_consignee",
+   "fieldname": "buyer_name",
+   "fieldtype": "Data",
+   "label": "Buyer Name"
+  },
+  {
+   "depends_on": "eval:!doc.buyer_same_as_consignee",
+   "fieldname": "buyer_gstin",
+   "fieldtype": "Data",
+   "label": "Buyer GSTIN"
+  },
+  {
+   "fieldname": "column_break_afbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buyers_order_no",
+   "fieldtype": "Data",
+   "label": "Buyer's Order No."
+  },
+  {
+   "fieldname": "buyers_order_date",
+   "fieldtype": "Date",
+   "label": "Buyer's Order Date"
+  },
+  {
+   "fieldname": "column_break_fief",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:!doc.buyer_same_as_consignee",
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "dispatch_and_references_section",
+   "fieldtype": "Section Break",
+   "label": "Dispatch and References"
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "label": "Delivery Note",
+   "options": "Delivery Note"
+  },
+  {
+   "fieldname": "dispatched_through",
+   "fieldtype": "Select",
+   "label": "Dispatched Through",
+   "options": "By Road\nBy Water\nBy Air"
+  },
+  {
+   "fieldname": "freight_terms",
+   "fieldtype": "Select",
+   "label": "Freight Terms",
+   "options": "Extra\nTo Pay\nIncluded, Paid"
+  },
+  {
+   "fieldname": "column_break_hdqp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "suppliers_ref",
+   "fieldtype": "Data",
+   "label": "Supplier's Ref"
+  },
+  {
+   "fieldname": "warranty",
+   "fieldtype": "Data",
+   "label": "Warranty"
+  },
+  {
+   "fieldname": "other_references",
+   "fieldtype": "Data",
+   "label": "Other Reference's"
+  },
+  {
+   "fieldname": "column_break_pkdg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date"
+  },
+  {
+   "fieldname": "modeterms_of_payment",
+   "fieldtype": "Small Text",
+   "label": "Mode/Terms of Payment"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "table_wyea",
+   "fieldtype": "Table",
+   "options": "Proforma Invoice Items"
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fieldname": "column_break_lurb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wass",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_asfz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total"
+  },
+  {
+   "fieldname": "balance_payment",
+   "fieldtype": "Currency",
+   "label": "Balance Payment"
+  },
+  {
+   "fieldname": "advance_payment",
+   "fieldtype": "Currency",
+   "label": "Advance Payment"
+  },
+  {
+   "fieldname": "section_break_eaqt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Proforma Invoice",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-06-30 16:03:31.370959",
+ "modified_by": "Administrator",
+ "module": "EnerTechv1",
+ "name": "Proforma Invoice",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

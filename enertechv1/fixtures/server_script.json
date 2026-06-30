@@ -454,5 +454,24 @@
   "reference_doctype": "Opportunity",
   "script": "if doc.follow_up_activities:\n    last_row = doc.follow_up_activities[-1]\n    doc.latest_inquiry_status = last_row.inquiry_status or \"\"\nelse:\n    doc.latest_inquiry_status = \"\"",
   "script_type": "DocType Event"
+ },
+ {
+  "allow_guest": 0,
+  "api_method": "create_proforma_invoice",
+  "cron_format": null,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "Before Insert",
+  "enable_rate_limit": 0,
+  "event_frequency": "All",
+  "modified": "2026-06-23 16:59:40.530785",
+  "module": "EnerTechv1",
+  "name": "Quotation Create PI",
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "reference_doctype": null,
+  "script": "import frappe\n\nquotation = frappe.form_dict.get(\"quotation\")\n\nq = frappe.get_doc(\"Quotation\", quotation)\n\npi = frappe.new_doc(\"Proforma Invoice\")\n\n# Basic Details\npi.quotation = q.name\npi.customer_name = q.customer_name\npi.opportunity = q.opportunity\npi.currency = q.currency\npi.transaction_date = q.transaction_date\npi.valid_till = q.valid_till\n\n# Custom Fields\npi.lead = q.party_name if hasattr(q, \"party_name\") else \"\"\npi.payment_terms_template = q.payment_terms_template\npi.tax_category = q.tax_category\npi.shipping_rule = q.shipping_rule\n\n# Totals\npi.total = q.total\npi.net_total = q.net_total\npi.total_taxes_and_charges = q.total_taxes_and_charges\npi.grand_total = q.grand_total\npi.rounded_total = q.rounded_total\npi.sales_person = q.custom_sales_person_name\n# Items\nfor item in q.items:\n    pi.append(\"items\", {\n        \"item\": item.item_code,\n        \"item_name\": item.item_name,\n        \"description\": item.description,\n        \"qty\": item.qty,\n        \"uom\": item.uom,\n        \"rate\": item.rate,\n        \"amount\": item.amount\n    })\n\npi.insert(ignore_permissions=True)\n\nfrappe.response[\"message\"] = pi.name",
+  "script_type": "API"
  }
 ]
