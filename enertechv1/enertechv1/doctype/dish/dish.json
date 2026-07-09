@@ -1,0 +1,778 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:dish_no",
+ "creation": "2026-07-09 13:02:32.465115",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_cykk",
+  "dish_no",
+  "date",
+  "column_break_vxmo",
+  "proforma_invoice",
+  "quotation",
+  "amended_from",
+  "buyer_details_section",
+  "buyer",
+  "buyer_address",
+  "column_break_wkqm",
+  "buyers_name",
+  "buyer_contact_no",
+  "bueyer_gst_no",
+  "buyers_email",
+  "section_break_txou",
+  "customer",
+  "customer_address",
+  "column_break_yhmg",
+  "customer_name",
+  "contact_no",
+  "gst_no",
+  "customers_email",
+  "section_break_oryn",
+  "purchase_order_no",
+  "order_date",
+  "expected_delivery",
+  "warranty",
+  "column_break_xdss",
+  "modeterms_of_payment",
+  "bank_guarantee_details",
+  "c_form_status",
+  "mode_of_dispatch",
+  "section_break_rcuu",
+  "invoice_to_name",
+  "invoice_to_address",
+  "column_break_rxpa",
+  "special_note",
+  "section_break_hrfq",
+  "dispatch_to_name",
+  "dispatch_to_address",
+  "column_break_zonc",
+  "terms_of_delivery",
+  "dispatch_state",
+  "dispatch_pincode",
+  "section_break_tukk",
+  "standard_or_customized",
+  "column_break_vlrn",
+  "order_type",
+  "section_break_nbev",
+  "items",
+  "section_break_vllu",
+  "sub_total",
+  "gst_rate",
+  "column_break_dimp",
+  "gst_amount",
+  "total",
+  "section_break_gpee",
+  "pv_panel_make",
+  "pv_panel_wattage",
+  "pv_no_of_panels",
+  "column_break_jznl",
+  "pv_voc",
+  "pv_vmp",
+  "pv_price",
+  "section_break_xnet",
+  "battery_make",
+  "battery_dc",
+  "battery_ah",
+  "column_break_uclm",
+  "battery_qty",
+  "battery_type",
+  "battery_price",
+  "section_break_tdkw",
+  "product_name",
+  "product_make",
+  "column_break_jowl",
+  "product_rating",
+  "product_qty",
+  "section_break_vjms",
+  "vdc",
+  "input_spec",
+  "output_spec",
+  "column_break_lemu",
+  "mppt",
+  "gsm",
+  "rs232_485",
+  "lfp_compatibility",
+  "section_break_lnwi",
+  "load_details",
+  "section_break_szfd",
+  "transport_mode",
+  "transporter_name",
+  "column_break_rnut",
+  "payment_for_transporter",
+  "transporter_model",
+  "article_number",
+  "price_including_taxes",
+  "section_break_yrwq",
+  "inspection",
+  "warranty_certificate",
+  "test_report",
+  "column_break_hjkx",
+  "operation_manual",
+  "installation",
+  "section_break_xquf",
+  "special_instruction",
+  "section_break_wwkw",
+  "made_by",
+  "checked_by",
+  "column_break_kxmn",
+  "verified_by",
+  "authorized_by",
+  "section_break_rsyx",
+  "received_by_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_cykk",
+   "fieldtype": "Section Break",
+   "label": "Header Details"
+  },
+  {
+   "bold": 1,
+   "fieldname": "dish_no",
+   "fieldtype": "Data",
+   "label": "Dish No",
+   "no_copy": 1,
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_vxmo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "proforma_invoice",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Proforma Invoice",
+   "options": "Proforma Invoice",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "proforma_invoice.quotation",
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "options": "Quotation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Dish",
+   "read_only": 1
+  },
+  {
+   "fieldname": "buyer_details_section",
+   "fieldtype": "Section Break",
+   "label": "Buyer Details"
+  },
+  {
+   "fieldname": "buyer",
+   "fieldtype": "Link",
+   "label": "Buyer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "buyer_address",
+   "fieldtype": "Small Text",
+   "label": "Buyer Address"
+  },
+  {
+   "fieldname": "column_break_wkqm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "buyers_name",
+   "fieldtype": "Data",
+   "label": "Buyers Name"
+  },
+  {
+   "fieldname": "buyer_contact_no",
+   "fieldtype": "Data",
+   "label": "Buyer Contact No."
+  },
+  {
+   "fieldname": "bueyer_gst_no",
+   "fieldtype": "Data",
+   "label": "Bueyer GST No."
+  },
+  {
+   "fieldname": "buyers_email",
+   "fieldtype": "Data",
+   "label": "Buyer's Email"
+  },
+  {
+   "fieldname": "section_break_txou",
+   "fieldtype": "Section Break",
+   "label": "Customer Details"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "customer_address",
+   "fieldtype": "Small Text",
+   "label": "Customer Address"
+  },
+  {
+   "fieldname": "column_break_yhmg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "contact_no",
+   "fieldtype": "Data",
+   "label": "Customer Contact No"
+  },
+  {
+   "fieldname": "gst_no",
+   "fieldtype": "Data",
+   "label": "Customer GST No"
+  },
+  {
+   "fieldname": "customers_email",
+   "fieldtype": "Data",
+   "label": "Customer's Email"
+  },
+  {
+   "fieldname": "section_break_oryn",
+   "fieldtype": "Section Break",
+   "label": "Order Details"
+  },
+  {
+   "fieldname": "purchase_order_no",
+   "fieldtype": "Data",
+   "label": "Purchase Order No."
+  },
+  {
+   "fieldname": "order_date",
+   "fieldtype": "Date",
+   "label": "Order Date"
+  },
+  {
+   "fieldname": "expected_delivery",
+   "fieldtype": "Date",
+   "label": "Expected Delivery"
+  },
+  {
+   "fetch_from": "proforma_invoice.warranty",
+   "fieldname": "warranty",
+   "fieldtype": "Data",
+   "label": "Warranty"
+  },
+  {
+   "fieldname": "column_break_xdss",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "proforma_invoice.modeterms_of_payment",
+   "fieldname": "modeterms_of_payment",
+   "fieldtype": "Small Text",
+   "label": "Mode/Terms of Payment"
+  },
+  {
+   "fieldname": "bank_guarantee_details",
+   "fieldtype": "Data",
+   "label": "Bank Guarantee Details, If Any"
+  },
+  {
+   "fieldname": "c_form_status",
+   "fieldtype": "Select",
+   "label": "C Form Status",
+   "options": "\nY\nN"
+  },
+  {
+   "fetch_from": "proforma_invoice.dispatched_through",
+   "fieldname": "mode_of_dispatch",
+   "fieldtype": "Select",
+   "label": "Mode of Dispatch",
+   "options": "By Road\nBy Water\nBy Air"
+  },
+  {
+   "fieldname": "section_break_rcuu",
+   "fieldtype": "Section Break",
+   "label": "Invoice To"
+  },
+  {
+   "fieldname": "invoice_to_name",
+   "fieldtype": "Data",
+   "label": "Invoice To - Name"
+  },
+  {
+   "fieldname": "invoice_to_address",
+   "fieldtype": "Small Text",
+   "label": "Invoice To - Address"
+  },
+  {
+   "fieldname": "column_break_rxpa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "special_note",
+   "fieldtype": "Small Text",
+   "label": "Special Note"
+  },
+  {
+   "fieldname": "section_break_hrfq",
+   "fieldtype": "Section Break",
+   "label": "Dispatch To"
+  },
+  {
+   "fieldname": "dispatch_to_name",
+   "fieldtype": "Data",
+   "label": "Dispatch To - Name"
+  },
+  {
+   "fieldname": "dispatch_to_address",
+   "fieldtype": "Small Text",
+   "label": "Dispatch To - Address"
+  },
+  {
+   "fieldname": "column_break_zonc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "proforma_invoice.freight_terms",
+   "fieldname": "terms_of_delivery",
+   "fieldtype": "Select",
+   "label": "Terms of Delivery",
+   "options": "Extra\nTo Pay\nIncluded, Paid"
+  },
+  {
+   "fieldname": "dispatch_state",
+   "fieldtype": "Data",
+   "label": "Dispatch State"
+  },
+  {
+   "fieldname": "dispatch_pincode",
+   "fieldtype": "Data",
+   "label": "Dispatch Pincode"
+  },
+  {
+   "fieldname": "section_break_tukk",
+   "fieldtype": "Section Break",
+   "label": "Order Classification"
+  },
+  {
+   "fieldname": "standard_or_customized",
+   "fieldtype": "Select",
+   "label": "Standard / Customized",
+   "options": "Standard\nCustomized"
+  },
+  {
+   "fieldname": "column_break_vlrn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "order_type",
+   "fieldtype": "Select",
+   "label": "First Order / Repeat Order",
+   "options": "First Order\nRepeat Order"
+  },
+  {
+   "fieldname": "section_break_nbev",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Dish Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_vllu",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "fetch_from": "proforma_invoice.total",
+   "fieldname": "sub_total",
+   "fieldtype": "Currency",
+   "label": "Sub Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "gst_rate",
+   "fieldtype": "Percent",
+   "label": "GST Rate"
+  },
+  {
+   "fieldname": "column_break_dimp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "proforma_invoice.total_gst",
+   "fieldname": "gst_amount",
+   "fieldtype": "Currency",
+   "label": "GST Amount",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "proforma_invoice.total_with_gst",
+   "fieldname": "total",
+   "fieldtype": "Currency",
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_gpee",
+   "fieldtype": "Section Break",
+   "label": "Scope of Supply - PV Panels"
+  },
+  {
+   "fieldname": "pv_panel_make",
+   "fieldtype": "Data",
+   "label": "Panel Make"
+  },
+  {
+   "fieldname": "pv_panel_wattage",
+   "fieldtype": "Data",
+   "label": "Panel Wattage"
+  },
+  {
+   "fieldname": "pv_no_of_panels",
+   "fieldtype": "Int",
+   "label": "No of Panels"
+  },
+  {
+   "fieldname": "column_break_jznl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pv_voc",
+   "fieldtype": "Data",
+   "label": "Voc"
+  },
+  {
+   "fieldname": "pv_vmp",
+   "fieldtype": "Data",
+   "label": "Vmp"
+  },
+  {
+   "fieldname": "pv_price",
+   "fieldtype": "Data",
+   "label": "Price"
+  },
+  {
+   "fieldname": "section_break_xnet",
+   "fieldtype": "Section Break",
+   "label": "Scope of Supply - Battery"
+  },
+  {
+   "fieldname": "battery_make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "battery_dc",
+   "fieldtype": "Data",
+   "label": "DC"
+  },
+  {
+   "fieldname": "battery_ah",
+   "fieldtype": "Data",
+   "label": "AH"
+  },
+  {
+   "fieldname": "column_break_uclm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "battery_qty",
+   "fieldtype": "Data",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "battery_type",
+   "fieldtype": "Data",
+   "label": "Type"
+  },
+  {
+   "fieldname": "battery_price",
+   "fieldtype": "Data",
+   "label": "Price"
+  },
+  {
+   "fieldname": "section_break_tdkw",
+   "fieldtype": "Section Break",
+   "label": "Product Specification"
+  },
+  {
+   "fieldname": "product_name",
+   "fieldtype": "Data",
+   "label": "Product"
+  },
+  {
+   "fieldname": "product_make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "column_break_jowl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "product_rating",
+   "fieldtype": "Data",
+   "label": "Rating"
+  },
+  {
+   "fieldname": "product_qty",
+   "fieldtype": "Data",
+   "label": "Qty"
+  },
+  {
+   "fieldname": "section_break_vjms",
+   "fieldtype": "Section Break",
+   "label": "Technical Specification"
+  },
+  {
+   "fieldname": "vdc",
+   "fieldtype": "Data",
+   "label": "VDC"
+  },
+  {
+   "fieldname": "input_spec",
+   "fieldtype": "Data",
+   "label": "Input"
+  },
+  {
+   "fieldname": "output_spec",
+   "fieldtype": "Data",
+   "label": "Output"
+  },
+  {
+   "fieldname": "column_break_lemu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mppt",
+   "fieldtype": "Data",
+   "label": "MPPT"
+  },
+  {
+   "fieldname": "gsm",
+   "fieldtype": "Select",
+   "label": "GSM",
+   "options": "\nY\nN"
+  },
+  {
+   "fieldname": "rs232_485",
+   "fieldtype": "Select",
+   "label": "RS 232/485",
+   "options": "\nY\nN"
+  },
+  {
+   "fieldname": "lfp_compatibility",
+   "fieldtype": "Select",
+   "label": "LFP Compatibility",
+   "options": "\nY\nN"
+  },
+  {
+   "fieldname": "section_break_lnwi",
+   "fieldtype": "Section Break",
+   "label": "Load Details"
+  },
+  {
+   "fieldname": "load_details",
+   "fieldtype": "Small Text",
+   "label": "Load Details"
+  },
+  {
+   "fieldname": "section_break_szfd",
+   "fieldtype": "Section Break",
+   "label": "Transport Details"
+  },
+  {
+   "fieldname": "transport_mode",
+   "fieldtype": "Select",
+   "label": "Transport",
+   "options": "\nCARGO\nFull Tempo\nPart Load"
+  },
+  {
+   "fieldname": "transporter_name",
+   "fieldtype": "Data",
+   "label": "Which Transporter"
+  },
+  {
+   "fieldname": "column_break_rnut",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_for_transporter",
+   "fieldtype": "Select",
+   "label": "Payment For Transporter",
+   "options": "\nExtra/ To Pay\nIncluded"
+  },
+  {
+   "fieldname": "transporter_model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "article_number",
+   "fieldtype": "Data",
+   "label": "Article Number"
+  },
+  {
+   "fieldname": "price_including_taxes",
+   "fieldtype": "Small Text",
+   "label": "Price (Including Taxes)"
+  },
+  {
+   "fieldname": "section_break_yrwq",
+   "fieldtype": "Section Break",
+   "label": "Checklist"
+  },
+  {
+   "default": "0",
+   "fieldname": "inspection",
+   "fieldtype": "Check",
+   "label": "Inspection"
+  },
+  {
+   "default": "0",
+   "fieldname": "warranty_certificate",
+   "fieldtype": "Check",
+   "label": "Warranty Certificate"
+  },
+  {
+   "default": "0",
+   "fieldname": "test_report",
+   "fieldtype": "Check",
+   "label": "Test Report"
+  },
+  {
+   "fieldname": "column_break_hjkx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "operation_manual",
+   "fieldtype": "Check",
+   "label": "Operation Manual"
+  },
+  {
+   "default": "0",
+   "fieldname": "installation",
+   "fieldtype": "Check",
+   "label": "Installation"
+  },
+  {
+   "fieldname": "section_break_xquf",
+   "fieldtype": "Section Break",
+   "label": "Special Instruction"
+  },
+  {
+   "fieldname": "special_instruction",
+   "fieldtype": "Small Text",
+   "label": "Special Instruction"
+  },
+  {
+   "fieldname": "section_break_wwkw",
+   "fieldtype": "Section Break",
+   "label": "Sign Off"
+  },
+  {
+   "fieldname": "made_by",
+   "fieldtype": "Data",
+   "label": "Made By"
+  },
+  {
+   "fieldname": "checked_by",
+   "fieldtype": "Data",
+   "label": "Checked By"
+  },
+  {
+   "fieldname": "column_break_kxmn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "verified_by",
+   "fieldtype": "Data",
+   "label": "Verified By"
+  },
+  {
+   "fieldname": "authorized_by",
+   "fieldtype": "Data",
+   "label": "Authorized By"
+  },
+  {
+   "fieldname": "section_break_rsyx",
+   "fieldtype": "Section Break",
+   "label": "Additional Details - Received By"
+  },
+  {
+   "fieldname": "received_by_details",
+   "fieldtype": "Table",
+   "label": "Received By",
+   "options": "Dish Received By"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-07-09 16:25:47.519203",
+ "modified_by": "Administrator",
+ "module": "EnerTechv1",
+ "name": "Dish",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -271,3 +271,12 @@ fixtures = [
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+doctype_js = {
+    "Quotation": "public/js/Quotation.js"
+}
+
+doctype_events = {
+    "Sales Order":{
+        "before_insert": "enertechv1.enertechv1.api.sales_order.generate_sales_order_series",
+    }
+}

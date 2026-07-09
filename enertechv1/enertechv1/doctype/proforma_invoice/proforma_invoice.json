@@ -13,9 +13,8 @@
   "column_break_ffpf",
   "date",
   "consignee_details_section",
-  "customer",
-  "consignee_gstin",
   "customer_name",
+  "consignee_gstin",
   "column_break_ltog",
   "consignee_address",
   "section_break_pkwm",
@@ -23,6 +22,9 @@
   "buyer_name",
   "buyer_gstin",
   "column_break_afbj",
+  "by_po",
+  "by_verbal",
+  "by_email",
   "buyers_order_no",
   "buyers_order_date",
   "column_break_fief",
@@ -59,7 +61,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Naming Series",
-   "options": "EUPL/.YY.-.####;"
+   "options": "EUPL/-"
   },
   {
    "fieldname": "column_break_asjh",
@@ -84,12 +86,6 @@
    "fieldname": "consignee_details_section",
    "fieldtype": "Section Break",
    "label": "Consignee Details"
-  },
-  {
-   "fieldname": "customer",
-   "fieldtype": "Link",
-   "label": "Customer",
-   "options": "Customer"
   },
   {
    "fieldname": "consignee_gstin",
@@ -269,13 +265,31 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "by_po",
+   "fieldtype": "Check",
+   "label": "By Po"
+  },
+  {
+   "default": "0",
+   "fieldname": "by_verbal",
+   "fieldtype": "Check",
+   "label": "By Verbal"
+  },
+  {
+   "default": "0",
+   "fieldname": "by_email",
+   "fieldtype": "Check",
+   "label": "By Email"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-06-30 16:03:31.370959",
+ "modified": "2026-07-01 12:32:59.224723",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
