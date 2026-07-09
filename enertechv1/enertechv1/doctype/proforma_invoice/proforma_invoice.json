@@ -1,34 +1,45 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "naming_series:",
+ "autoname": "field:proforma_invoice_no",
  "creation": "2026-06-30 12:19:47.779246",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_vz7h",
-  "naming_series",
-  "column_break_asjh",
+  "proforma_invoice_no",
   "quotation",
-  "column_break_ffpf",
+  "test",
+  "column_break_asjh",
   "date",
+  "column_break_ffpf",
+  "document_no",
+  "rev_no",
+  "updated",
   "consignee_details_section",
-  "customer_name",
-  "consignee_gstin",
-  "column_break_ltog",
-  "consignee_address",
-  "section_break_pkwm",
-  "buyer_same_as_consignee",
+  "buyer",
   "buyer_name",
-  "buyer_gstin",
-  "column_break_afbj",
-  "by_po",
-  "by_verbal",
-  "by_email",
   "buyers_order_no",
   "buyers_order_date",
-  "column_break_fief",
+  "buyer_gstin",
+  "approval_status",
+  "column_break_ltog",
   "address",
+  "buyers_phone_no",
+  "buyers_email",
+  "by_verbal",
+  "by_po",
+  "by_email",
+  "section_break_pkwm",
+  "customer_same_as_consignee",
+  "customer",
+  "customer_name",
+  "consignee_gstin",
+  "customer_phone_no",
+  "column_break_afbj",
+  "consignee_address",
+  "customers_phone_no",
+  "customer_email",
   "dispatch_and_references_section",
   "delivery_note",
   "dispatched_through",
@@ -41,14 +52,14 @@
   "delivery_date",
   "modeterms_of_payment",
   "items_section",
-  "table_wyea",
+  "items",
   "totals_section",
   "column_break_lurb",
   "column_break_wass",
   "column_break_asfz",
   "total",
-  "balance_payment",
-  "advance_payment",
+  "total_gst",
+  "total_with_gst",
   "section_break_eaqt",
   "amended_from"
  ],
@@ -56,12 +67,6 @@
   {
    "fieldname": "section_break_vz7h",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Naming Series",
-   "options": "EUPL/-"
   },
   {
    "fieldname": "column_break_asjh",
@@ -85,7 +90,7 @@
   {
    "fieldname": "consignee_details_section",
    "fieldtype": "Section Break",
-   "label": "Consignee Details"
+   "label": "Buyer's Details"
   },
   {
    "fieldname": "consignee_gstin",
@@ -110,22 +115,14 @@
   {
    "fieldname": "section_break_pkwm",
    "fieldtype": "Section Break",
-   "label": "Buyer Details"
+   "label": "Customer Details"
   },
   {
-   "default": "1",
-   "fieldname": "buyer_same_as_consignee",
-   "fieldtype": "Check",
-   "label": "Buyer same as consignee"
-  },
-  {
-   "depends_on": "eval:!doc.buyer_same_as_consignee",
    "fieldname": "buyer_name",
    "fieldtype": "Data",
    "label": "Buyer Name"
   },
   {
-   "depends_on": "eval:!doc.buyer_same_as_consignee",
    "fieldname": "buyer_gstin",
    "fieldtype": "Data",
    "label": "Buyer GSTIN"
@@ -145,14 +142,9 @@
    "label": "Buyer's Order Date"
   },
   {
-   "fieldname": "column_break_fief",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval:!doc.buyer_same_as_consignee",
    "fieldname": "address",
    "fieldtype": "Small Text",
-   "label": "Address"
+   "label": "Buyer's Address"
   },
   {
    "fieldname": "dispatch_and_references_section",
@@ -216,11 +208,6 @@
    "label": "Items"
   },
   {
-   "fieldname": "table_wyea",
-   "fieldtype": "Table",
-   "options": "Proforma Invoice Items"
-  },
-  {
    "fieldname": "totals_section",
    "fieldtype": "Section Break",
    "label": "Totals"
@@ -241,16 +228,6 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "label": "Total"
-  },
-  {
-   "fieldname": "balance_payment",
-   "fieldtype": "Currency",
-   "label": "Balance Payment"
-  },
-  {
-   "fieldname": "advance_payment",
-   "fieldtype": "Currency",
-   "label": "Advance Payment"
   },
   {
    "fieldname": "section_break_eaqt",
@@ -283,17 +260,122 @@
    "fieldname": "by_email",
    "fieldtype": "Check",
    "label": "By Email"
+  },
+  {
+   "fieldname": "proforma_invoice_no",
+   "fieldtype": "Data",
+   "label": "Proforma Invoice No",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "test",
+   "fieldtype": "Data",
+   "label": "Test"
+  },
+  {
+   "default": "EUPL/MKTG/FR/01 ",
+   "fieldname": "document_no",
+   "fieldtype": "Data",
+   "label": "Document No",
+   "read_only": 1
+  },
+  {
+   "default": "02",
+   "fieldname": "rev_no",
+   "fieldtype": "Data",
+   "label": "REV. No."
+  },
+  {
+   "default": "1.10.2017",
+   "fieldname": "updated",
+   "fieldtype": "Data",
+   "label": "Updated"
+  },
+  {
+   "fieldname": "buyer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Buyer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "\nNeeds Approval\nApproved",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "buyers_phone_no",
+   "fieldtype": "Data",
+   "label": "Buyer's Phone No."
+  },
+  {
+   "fieldname": "buyers_email",
+   "fieldtype": "Data",
+   "label": "Buyer's Email"
+  },
+  {
+   "default": "0",
+   "fieldname": "customer_same_as_consignee",
+   "fieldtype": "Check",
+   "label": "Customer Same As Consignee"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer_phone_no",
+   "fieldtype": "Data",
+   "label": "Customer Phone No"
+  },
+  {
+   "fieldname": "customers_phone_no",
+   "fieldtype": "Data",
+   "label": "Customer's Phone No."
+  },
+  {
+   "fieldname": "customer_email",
+   "fieldtype": "Data",
+   "label": "Customer Email"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "items",
+   "options": "Proforma Invoice Items",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total_gst",
+   "fieldtype": "Currency",
+   "label": "Total GST"
+  },
+  {
+   "fieldname": "total_with_gst",
+   "fieldtype": "Currency",
+   "label": "Total With GST"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-07-01 12:32:59.224723",
+ "links": [
+  {
+   "link_doctype": "Sales Order",
+   "link_fieldname": "custom_proforma_invoice"
+  }
+ ],
+ "modified": "2026-07-09 17:46:40.858631",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
- "naming_rule": "By \"Naming Series\" field",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -304,8 +386,24 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "System Manager",
+   "role": "All",
+   "select": 1,
    "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Administrator",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
