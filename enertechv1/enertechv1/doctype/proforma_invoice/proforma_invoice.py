@@ -425,90 +425,91 @@ def make_proforma_invoice(source_name, target_doc=None):
 
 	return proforma_invoice
 
-@frappe.whitelist()
-def make_sales_order(source_name, target_doc=None):
-	source = frappe.get_doc("Proforma Invoice", source_name)
 
-	customer = frappe.db.get_value(
-		"Customer",
-		{"customer_name": source.customer},
-		"name"
-	)
-	buyer = frappe.db.get_value(
-		"Customer",
-		{"customer_name": source.buyer},
-		"name"
-	)
-	if not customer:
-		frappe.throw(f"Customer '{source.customer}' not found. Please submit the Proforma Invoice first so the Customer is created.")
+# @frappe.whitelist()
+# def make_sales_order(source_name, target_doc=None):
+# 	source = frappe.get_doc("Proforma Invoice", source_name)
 
-	sales_order = frappe.new_doc("Sales Order")
-	sales_order.ignore_pricing_rule = 1
+# 	customer = frappe.db.get_value(
+# 		"Customer",
+# 		{"customer_name": source.customer},
+# 		"name"
+# 	)
+# 	buyer = frappe.db.get_value(
+# 		"Customer",
+# 		{"customer_name": source.buyer},
+# 		"name"
+# 	)
+# 	if not customer:
+# 		frappe.throw(f"Customer '{source.customer}' not found. Please submit the Proforma Invoice first so the Customer is created.")
 
-	sales_order.custom_buyer = buyer
-	sales_order.custom_buyers_name = source.buyer
-	sales_order.custom_buyers_gstin = source.buyer_gstin
-	sales_order.custom_buyers_address = source.address
-	sales_order.custom_buyers_order_no = source.buyers_order_no
-	sales_order.customer = customer
-	sales_order.transaction_date = source.date
-	sales_order.delivery_date = source.delivery_date or source.date
-	sales_order.custom_order_date = source.buyers_order_date
-	sales_order.custom_warrenty = source.warranty
-	sales_order.custom_freight_terms = source.freight_terms
-	sales_order.custom_dispatched_through = source.dispatched_through
-	sales_order.custom_address = source.consignee_address
-	sales_order.custom_modeterms_of_payment = source.modeterms_of_payment
-	sales_order.custom_customers_address = source.consignee_address
-	sales_order.customer = source.customer
-	sales_order.custom_quotation = source.quotation
-	sales_order.custom_proforma_invoice = source.name
-	sales_order.custom_buyers_phone_no = source.buyers_phone_no
-	sales_order.custom_customers_phone_no = source.customer_phone_no
-	sales_order.custom_customer_gstin = source.consignee_gstin
-	sales_order.custom_customers_phone_no = source.customer_phone_no
+# 	sales_order = frappe.new_doc("Sales Order")
+# 	sales_order.ignore_pricing_rule = 1
 
-	if sales_order.meta.has_field("custom_proforma_invoice"):
-		sales_order.custom_proforma_invoice = source.name
+# 	sales_order.custom_buyer = buyer
+# 	sales_order.custom_buyers_name = source.buyer
+# 	sales_order.custom_buyers_gstin = source.buyer_gstin
+# 	sales_order.custom_buyers_address = source.address
+# 	sales_order.custom_buyers_order_no = source.buyers_order_no
+# 	sales_order.customer = customer
+# 	sales_order.transaction_date = source.date
+# 	sales_order.delivery_date = source.delivery_date or source.date
+# 	sales_order.custom_order_date = source.buyers_order_date
+# 	sales_order.custom_warrenty = source.warranty
+# 	sales_order.custom_freight_terms = source.freight_terms
+# 	sales_order.custom_dispatched_through = source.dispatched_through
+# 	sales_order.custom_address = source.consignee_address
+# 	sales_order.custom_modeterms_of_payment = source.modeterms_of_payment
+# 	sales_order.custom_customers_address = source.consignee_address
+# 	sales_order.customer = source.customer
+# 	sales_order.custom_quotation = source.quotation
+# 	sales_order.custom_proforma_invoice = source.name
+# 	sales_order.custom_buyers_phone_no = source.buyers_phone_no
+# 	sales_order.custom_customers_phone_no = source.customer_phone_no
+# 	sales_order.custom_customer_gstin = source.consignee_gstin
+# 	sales_order.custom_customers_phone_no = source.customer_phone_no
 
-	# Copy Items
-	for row in source.items:
-		item = frappe.get_cached_doc("Item", row.item)
+# 	if sales_order.meta.has_field("custom_proforma_invoice"):
+# 		sales_order.custom_proforma_invoice = source.name
 
-		so_item = sales_order.append("items", {
-			"item_code": row.item,
-			"item_name": item.item_name,
-			"qty": row.quantity,
-			"uom": row.uom,
-			"rate": row.rate,
-			"price_list_rate": row.rate,
-			"delivery_date": source.delivery_date or source.date,
-			"item_tax_template": None,
-		})
-		so_item.ignore_pricing_rule = 1
+# 	# Copy Items
+# 	for row in source.items:
+# 		item = frappe.get_cached_doc("Item", row.item)
 
-	# Keep taxes table empty
-	sales_order.taxes_and_charges = None
-	sales_order.taxes = []
+# 		so_item = sales_order.append("items", {
+# 			"item_code": row.item,
+# 			"item_name": item.item_name,
+# 			"qty": row.quantity,
+# 			"uom": row.uom,
+# 			"rate": row.rate,
+# 			"price_list_rate": row.rate,
+# 			"delivery_date": source.delivery_date or source.date,
+# 			"item_tax_template": None,
+# 		})
+# 		so_item.ignore_pricing_rule = 1
 
-	# -----------------------------------------------------------------
-	# Insert directly on the server. Because there's no unsaved form
-	# opened in the browser for this document, the client-side item-tax
-	# auto-add logic never runs — it only fires on form load/refresh,
-	# which we're skipping entirely.
-	# -----------------------------------------------------------------
-	sales_order.insert(ignore_permissions=True)
+# 	# Keep taxes table empty
+# 	sales_order.taxes_and_charges = None
+# 	sales_order.taxes = []
 
-	# Server-side validate/calculate_taxes_and_totals also runs during
-	# insert(), so re-assert an empty taxes table AFTER insert in case
-	# anything repopulated it during save, then save again if needed.
-	if sales_order.taxes:
-		sales_order.taxes = []
-		sales_order.save(ignore_permissions=True)
+# 	# -----------------------------------------------------------------
+# 	# Insert directly on the server. Because there's no unsaved form
+# 	# opened in the browser for this document, the client-side item-tax
+# 	# auto-add logic never runs — it only fires on form load/refresh,
+# 	# which we're skipping entirely.
+# 	# -----------------------------------------------------------------
+# 	sales_order.insert(ignore_permissions=True)
 
-	frappe.msgprint(f"Sales Order {sales_order.name} created successfully.")
+# 	# Server-side validate/calculate_taxes_and_totals also runs during
+# 	# insert(), so re-assert an empty taxes table AFTER insert in case
+# 	# anything repopulated it during save, then save again if needed.
+# 	if sales_order.taxes:
+# 		sales_order.taxes = []
+# 		sales_order.save(ignore_permissions=True)
 
-	return sales_order.name
+# 	frappe.msgprint(f"Sales Order {sales_order.name} created successfully.")
+
+# 	return sales_order.name
 
 
 
