@@ -2,6 +2,17 @@
  {
   "docstatus": 0,
   "doctype": "Client Script",
+  "dt": "Quotation",
+  "enabled": 0,
+  "modified": "2026-07-01 12:02:14.617147",
+  "module": "EnerTechv1",
+  "name": "Quotation Create PI",
+  "script": "frappe.ui.form.on(\"Quotation\", {\n    refresh(frm) {\n        window.enertech_proforma_script_loaded = true;\n        console.log(\"Enertech Proforma Client Script loaded\", frm.doc.name);\n        setTimeout(() => add_enertech_proforma_button(frm), 300);\n        setTimeout(() => add_enertech_proforma_button(frm), 1200);\n    },\n    onload_post_render(frm) {\n        window.enertech_proforma_script_loaded = true;\n        setTimeout(() => add_enertech_proforma_button(frm), 300);\n    }\n});\n\nfunction create_enertech_proforma_invoice(frm) {\n    if (frm.is_new()) {\n        frappe.msgprint(__(\"Please save the Quotation before creating a Proforma Invoice.\"));\n        return;\n    }\n\n    frappe.model.open_mapped_doc({\n        method: \"enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_proforma_invoice\",\n        frm: frm,\n    });\n}\n\nfunction add_enertech_proforma_button(frm) {\n    if (!frm || !frm.page) return;\n\n    window.enertech_proforma_button_attempted = true;\n\n    const label = __(\"Create Proforma Invoice\");\n    const handler = () => create_enertech_proforma_invoice(frm);\n\n    frm.remove_custom_button(label);\n    frm.add_custom_button(label, handler);\n    frm.page.add_action_item(label, handler);\n\n    if (frm.page.set_primary_action) {\n        frm.page.set_primary_action(label, handler);\n    }\n\n    $(\".enertech-create-proforma-invoice\").remove();\n\n    const floating_button = $(`<button class=\"btn btn-primary enertech-create-proforma-invoice\" type=\"button\" style=\"position: fixed; right: 24px; bottom: 24px; z-index: 99999; box-shadow: 0 4px 14px rgba(0,0,0,.2);\">\n        ${label}\n    </button>`);\n    floating_button.on(\"click\", handler);\n    $(document.body).append(floating_button);\n\n    const toolbar_button = $(`<button class=\"btn btn-primary btn-sm enertech-create-proforma-invoice\" type=\"button\" style=\"margin-left: 8px;\">\n        ${label}\n    </button>`);\n    toolbar_button.on(\"click\", handler);\n\n    const toolbar_targets = [\n        frm.page.wrapper.find(\".page-actions\"),\n        frm.page.wrapper.find(\".standard-actions\"),\n        frm.page.wrapper.find(\".custom-actions\"),\n        $(\".page-actions\"),\n        $(\".standard-actions\")\n    ];\n\n    for (const target of toolbar_targets) {\n        if (target && target.length) {\n            target.prepend(toolbar_button.clone(true));\n            break;\n        }\n    }\n\n    window.enertech_proforma_button_count = $(\".enertech-create-proforma-invoice\").length;\n    console.log(\"Enertech Proforma buttons added\", window.enertech_proforma_button_count);\n}\n",
+  "view": "Form"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Client Script",
   "dt": "Lead",
   "enabled": 0,
   "modified": "2025-08-26 14:23:19.215966",
