@@ -23,7 +23,7 @@ class ProformaInvoice(Document):
 		# Set the buyer as the customer for the invoice
 		self.buyer = buyer
 		self.set_customer_email(buyer)
-		# self.send_proforma_email()
+		self.send_proforma_email()
 
 
 	def validate_rate(self):
