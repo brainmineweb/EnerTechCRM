@@ -4,19 +4,6 @@
 
 frappe.ui.form.on("Proforma Invoice", {
     refresh(frm) {
-
-        if (frm.is_new() && !frm.doc.series) {
-            frm.call({
-                method: "generate_series",
-                doc: frm.doc,
-                callback(r) {
-                    if (r.message) {
-                        frm.set_value("series", r.message);
-                    }
-                }
-            });
-        }
-        // Show button only after Submit
 		if (frm.doc.docstatus === 1) {
 			frm.add_custom_button(__('Dish'), function () {
 				frappe.model.open_mapped_doc({

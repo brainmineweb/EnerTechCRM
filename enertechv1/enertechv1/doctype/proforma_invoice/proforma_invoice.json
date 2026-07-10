@@ -2,14 +2,13 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:proforma_invoice_no",
- "creation": "2026-06-30 12:19:47.779246",
+ "creation": "2026-07-10 11:35:59.205737",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_vz7h",
   "proforma_invoice_no",
   "quotation",
-  "test",
   "column_break_asjh",
   "date",
   "column_break_ffpf",
@@ -269,11 +268,6 @@
    "unique": 1
   },
   {
-   "fieldname": "test",
-   "fieldtype": "Data",
-   "label": "Test"
-  },
-  {
    "default": "EUPL/MKTG/FR/01 ",
    "fieldname": "document_no",
    "fieldtype": "Data",
@@ -300,11 +294,12 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "approval_status",
    "fieldtype": "Select",
    "label": "Approval Status",
    "options": "\nNeeds Approval\nApproved",
-   "permlevel": 1
+   "read_only": 1
   },
   {
    "fieldname": "buyers_phone_no",
@@ -365,13 +360,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [
-  {
-   "link_doctype": "Sales Order",
-   "link_fieldname": "custom_proforma_invoice"
-  }
- ],
- "modified": "2026-07-09 17:46:40.858631",
+ "links": [],
+ "modified": "2026-07-10 11:53:48.711544",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

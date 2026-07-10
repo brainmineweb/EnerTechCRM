@@ -275,7 +275,7 @@ doctype_js = {
     "Quotation": "public/js/Quotation.js"
 }
 
-doctype_events = {
+doc_events = {
     "Sales Order":{
         "before_insert": "enertechv1.enertechv1.api.sales_order.generate_sales_order_series",
     }

@@ -14,6 +14,9 @@ class ProformaInvoice(Document):
 	def before_insert(self):
 		self.generate_series()
 
+	def validate(self):
+		self.validate_rate()
+
 	def before_save(self):
 		self.validate_rate()
 
@@ -369,19 +372,52 @@ class ProformaInvoice(Document):
 			send_priority=0
 		)
 		
+
+
 	@frappe.whitelist()
 	def generate_series(self):
+		"""
+		Generate PI number only on submit.
+		Finds the MAX number in the sequence, ignores amended/cancelled docs.
+		Next number = max + 1 (always increments, never reuses gaps).
+		"""
 		today = getdate(nowdate())
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
-
-		series_key = f"PI-{year}"          # scoped to year -> resets automatically each year
-		number = getseries(series_key, 3)  # returns zero-padded string, e.g. "00001"
-
-		series = f"EUPL/{year}/{month}/{number}"
+		prefix = f"EUPL/{year}/{month}/"
+ 
+		# Get ALL PIs for this year/month (including amended ones)
+		all_pis = frappe.get_all(
+			"Proforma Invoice",
+			filters=[
+				["proforma_invoice_no", "like", f"{prefix}%"]
+			],
+			fields=["proforma_invoice_no", "docstatus"]
+		)
+ 
+		max_number = 0
+ 
+		for pi in all_pis:
+			# Skip amended/cancelled docs (docstatus=2)
+			if pi.docstatus == 2:
+				continue
+			
+			# Extract the number from "EUPL/26/01/045"
+			try:
+				parts = pi.proforma_invoice_no.split("/")
+				if len(parts) == 4:
+					num = int(parts[3])
+					max_number = max(max_number, num)
+			except (ValueError, IndexError):
+				pass
+ 
+		# Next number is always max + 1
+		next_number = max_number + 1
+		number = f"{next_number:03d}"  # zero-padded to 3 digits
+ 
+		series = f"{prefix}{number}"
 		self.proforma_invoice_no = series
 		self.naming_series = series
-
 
 @frappe.whitelist()
 def ping_test():
@@ -426,93 +462,6 @@ def make_proforma_invoice(source_name, target_doc=None):
 	return proforma_invoice
 
 
-# @frappe.whitelist()
-# def make_sales_order(source_name, target_doc=None):
-# 	source = frappe.get_doc("Proforma Invoice", source_name)
-
-# 	customer = frappe.db.get_value(
-# 		"Customer",
-# 		{"customer_name": source.customer},
-# 		"name"
-# 	)
-# 	buyer = frappe.db.get_value(
-# 		"Customer",
-# 		{"customer_name": source.buyer},
-# 		"name"
-# 	)
-# 	if not customer:
-# 		frappe.throw(f"Customer '{source.customer}' not found. Please submit the Proforma Invoice first so the Customer is created.")
-
-# 	sales_order = frappe.new_doc("Sales Order")
-# 	sales_order.ignore_pricing_rule = 1
-
-# 	sales_order.custom_buyer = buyer
-# 	sales_order.custom_buyers_name = source.buyer
-# 	sales_order.custom_buyers_gstin = source.buyer_gstin
-# 	sales_order.custom_buyers_address = source.address
-# 	sales_order.custom_buyers_order_no = source.buyers_order_no
-# 	sales_order.customer = customer
-# 	sales_order.transaction_date = source.date
-# 	sales_order.delivery_date = source.delivery_date or source.date
-# 	sales_order.custom_order_date = source.buyers_order_date
-# 	sales_order.custom_warrenty = source.warranty
-# 	sales_order.custom_freight_terms = source.freight_terms
-# 	sales_order.custom_dispatched_through = source.dispatched_through
-# 	sales_order.custom_address = source.consignee_address
-# 	sales_order.custom_modeterms_of_payment = source.modeterms_of_payment
-# 	sales_order.custom_customers_address = source.consignee_address
-# 	sales_order.customer = source.customer
-# 	sales_order.custom_quotation = source.quotation
-# 	sales_order.custom_proforma_invoice = source.name
-# 	sales_order.custom_buyers_phone_no = source.buyers_phone_no
-# 	sales_order.custom_customers_phone_no = source.customer_phone_no
-# 	sales_order.custom_customer_gstin = source.consignee_gstin
-# 	sales_order.custom_customers_phone_no = source.customer_phone_no
-
-# 	if sales_order.meta.has_field("custom_proforma_invoice"):
-# 		sales_order.custom_proforma_invoice = source.name
-
-# 	# Copy Items
-# 	for row in source.items:
-# 		item = frappe.get_cached_doc("Item", row.item)
-
-# 		so_item = sales_order.append("items", {
-# 			"item_code": row.item,
-# 			"item_name": item.item_name,
-# 			"qty": row.quantity,
-# 			"uom": row.uom,
-# 			"rate": row.rate,
-# 			"price_list_rate": row.rate,
-# 			"delivery_date": source.delivery_date or source.date,
-# 			"item_tax_template": None,
-# 		})
-# 		so_item.ignore_pricing_rule = 1
-
-# 	# Keep taxes table empty
-# 	sales_order.taxes_and_charges = None
-# 	sales_order.taxes = []
-
-# 	# -----------------------------------------------------------------
-# 	# Insert directly on the server. Because there's no unsaved form
-# 	# opened in the browser for this document, the client-side item-tax
-# 	# auto-add logic never runs — it only fires on form load/refresh,
-# 	# which we're skipping entirely.
-# 	# -----------------------------------------------------------------
-# 	sales_order.insert(ignore_permissions=True)
-
-# 	# Server-side validate/calculate_taxes_and_totals also runs during
-# 	# insert(), so re-assert an empty taxes table AFTER insert in case
-# 	# anything repopulated it during save, then save again if needed.
-# 	if sales_order.taxes:
-# 		sales_order.taxes = []
-# 		sales_order.save(ignore_permissions=True)
-
-# 	frappe.msgprint(f"Sales Order {sales_order.name} created successfully.")
-
-# 	return sales_order.name
-
-
-
 def generate_sales_order_series(doc, method=None):
 	if not doc.is_new():
 		return
@@ -521,7 +470,7 @@ def generate_sales_order_series(doc, method=None):
 	year = str(today.year)[2:]
 	month = f"{today.month:02d}"
 
-	series_key = f"SO-{year}"           # independent counter, resets each year
+	series_key = f"SO-{year}"
 	number = getseries(series_key, 3)
 
 	doc.custom_sales_order_no = f"EUPL/SO/{year}/{month}/{number}"
@@ -579,5 +528,4 @@ def make_dish(source_name, target_doc=None):
 		})
 
 	return dish
-
 
