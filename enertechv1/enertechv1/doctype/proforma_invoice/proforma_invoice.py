@@ -7,7 +7,7 @@ from frappe.utils import flt
 from frappe.model.naming import getseries
 import re
 from frappe.utils import getdate, nowdate
-
+from frappe.utils import strip_html_tags
 
 class ProformaInvoice(Document):
 
@@ -446,23 +446,22 @@ def make_proforma_invoice(source_name, target_doc=None):
 	proforma_invoice.total_with_gst = quotation.custom_total_with_gst
 
 	for item in quotation.items:
-		item_code = frapppe.get_doc("Quotation Item", item.name)
 		proforma_invoice.append("items", {
 			"item": item.item_code,
 			"item_name": item.item_name,
-			"description": item.technical_description,
+			"description": strip_html_tags(item.technical_description),
 			"quantity": item.qty,
-			"warranty_years" : item.warranty_years,
+			"warranty_years": item.warranty_years,
 			"uom": item.uom,
 			"hsn_code": item.gst_hsn_code,
 			"rate": item.rate,
 			"amount": item.amount,
 			"custom_cgst_rate": item.custom_cgst_rate,
-            "custom_cgst_amount": item.custom_cgst_amount,
-	        "custom_sgst_rate": item.custom_sgst_rate,
-             "custom_sgst_amount": item.custom_sgst_amount,
-            "custom_igst_rate": item.custom_igst_rate,
-            "custom_igst_amount": item.custom_igst_amount,
+			"custom_cgst_amount": item.custom_cgst_amount,
+			"custom_sgst_rate": item.custom_sgst_rate,
+			"custom_sgst_amount": item.custom_sgst_amount,
+			"custom_igst_rate": item.custom_igst_rate,
+			"custom_igst_amount": item.custom_igst_amount,
 		})
 
 	return proforma_invoice
