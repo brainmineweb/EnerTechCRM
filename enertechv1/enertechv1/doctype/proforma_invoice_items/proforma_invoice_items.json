@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "column_break_hfla",
   "item_name",
   "column_break_tbqu",
   "warranty_years",
@@ -55,8 +56,6 @@
   {
    "fieldname": "uom",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
    "label": "UOM",
    "options": "UOM"
   },
@@ -142,14 +141,20 @@
    "fetch_from": "item.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Item Name"
+  },
+  {
+   "fieldname": "column_break_hfla",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-11 12:13:13.020239",
+ "modified": "2026-07-13 12:23:49.901961",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice Items",

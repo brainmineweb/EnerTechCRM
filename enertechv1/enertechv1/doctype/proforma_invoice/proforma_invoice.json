@@ -9,7 +9,6 @@
   "section_break_vz7h",
   "proforma_invoice_no",
   "quotation",
-  "test",
   "column_break_asjh",
   "date",
   "column_break_ffpf",
@@ -332,11 +331,6 @@
    "label": "Total With GST"
   },
   {
-   "fieldname": "test",
-   "fieldtype": "Data",
-   "label": "Test"
-  },
-  {
    "depends_on": "eval:doc.freight_terms==\"Paid\" || doc.freight_terms==\"Included\"",
    "fieldname": "amount",
    "fieldtype": "Data",
@@ -352,13 +346,8 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [
-  {
-   "link_doctype": "Sales Order",
-   "link_fieldname": "custom_proforma_invoice"
-  }
- ],
- "modified": "2026-07-10 17:12:19.173821",
+ "links": [],
+ "modified": "2026-07-13 12:38:36.262229",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

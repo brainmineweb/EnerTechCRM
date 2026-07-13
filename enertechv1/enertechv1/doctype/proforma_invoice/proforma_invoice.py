@@ -446,11 +446,13 @@ def make_proforma_invoice(source_name, target_doc=None):
 	proforma_invoice.total_with_gst = quotation.custom_total_with_gst
 
 	for item in quotation.items:
+		item_code = frapppe.get_doc("Quotation Item", item.name)
 		proforma_invoice.append("items", {
 			"item": item.item_code,
+			"item_name": item.item_name,
 			"description": item.technical_description,
 			"quantity": item.qty,
-			"warrenty" : item.warranty_years,
+			"warranty_years" : item.warranty_years,
 			"uom": item.uom,
 			"hsn_code": item.gst_hsn_code,
 			"rate": item.rate,
