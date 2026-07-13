@@ -14,56 +14,116 @@ class Dish(Document):
 
 	@frappe.whitelist()
 	def generate_series(self):
+		"""
+		Generate Dish number only on submit.
+		Finds the MAX number in the sequence, ignores amended/cancelled docs.
+		Next number = max + 1 (always increments, never reuses gaps).
+		"""
 		today = getdate(nowdate())
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
+		prefix = f"EUPL/{year}/{month}/"
 
-		series_key = f"DISH-{year}"        # independent counter, scoped to year -> resets automatically
-		number = getseries(series_key, 3)  # zero-padded string, e.g. "00001"
+		# Get ALL Dishes for this year/month (including amended ones)
+		all_dishes = frappe.get_all(
+			"Dish",
+			filters=[
+				["dish_no", "like", f"{prefix}%"]
+			],
+			fields=["dish_no", "docstatus"]
+		)
 
-		series = f"EUPL/{year}/{month}/{number}"
+		max_number = 0
+
+		for dish in all_dishes:
+			# Skip amended/cancelled docs (docstatus=2)
+			if dish.docstatus == 2:
+				continue
+
+			# Extract the number from "EUPL/26/01/045"
+			try:
+				parts = dish.dish_no.split("/")
+				if len(parts) == 4:
+					num = int(parts[3])
+					max_number = max(max_number, num)
+			except (ValueError, IndexError):
+				pass
+
+		# Next number is always max + 1
+		next_number = max_number + 1
+		number = f"{next_number:03d}"  # zero-padded to 3 digits
+
+		series = f"{prefix}{number}"
 		self.dish_no = series
-
+    
 
 @frappe.whitelist()
 def make_sales_order(source_name, target_doc=None):
-	"""Create a clean, standard-fields-only Sales Order from a submitted Dish.
-	No custom fields are set here on purpose — all customization lives on Dish.
-	"""
+    source = frappe.get_doc("Dish", source_name)
 
-	source = frappe.get_doc("Dish", source_name)
+    customer = frappe.db.get_value(
+        "Customer",
+        {"customer_name": source.customer},
+        "name"
+    )
 
-	customer = frappe.db.get_value(
-		"Customer",
-		{"customer_name": source.customer},
-		"name"
-	)
+    if not customer:
+        frappe.throw(
+            f"Customer '{source.customer}' not found. "
+            f"Please ensure the Customer exists (created via Proforma Invoice submission) before creating the Sales Order."
+        )
 
-	if not customer:
-		frappe.throw(
-			f"Customer '{source.customer}' not found. "
-			f"Please ensure the Customer exists (created via Proforma Invoice submission) before creating the Sales Order."
-		)
+    sales_order = frappe.new_doc("Sales Order")
+    sales_order.ignore_pricing_rule = 1
+    sales_order.customer = customer
+    sales_order.transaction_date = source.date
+    sales_order.delivery_date = source.expected_delivery or source.date
+    sales_order.po_no = source.purchase_order_no
+    sales_order.po_date = source.order_date
 
-	sales_order = frappe.new_doc("Sales Order")
-	sales_order.customer = customer
-	sales_order.transaction_date = source.date
-	sales_order.delivery_date = source.expected_delivery or source.date
-	sales_order.po_no = source.purchase_order_no
-	sales_order.po_date = source.order_date
+    for row in source.items:
+        sales_order.append("items", {
+            "item_code": row.item_code,
+            "qty": row.qty,
+            "uom": row.uom,
+            "rate": row.rate,
+            "delivery_date": source.expected_delivery or source.date,
+        })
 
-	for row in source.items:
-		sales_order.append("items", {
-			"item_code": row.item_code,
-			"qty": row.qty,
-			"uom": row.uom,
-			"rate": row.rate,
-			"delivery_date": source.expected_delivery or source.date,
-		})
+    # Pull GST rates from the first item row (cast to float — they arrive as strings)
+    first_row = source.items[0] if source.items else None
+    cgst_rate = float(first_row.cgst_rate or 0) if first_row else 0
+    sgst_rate = float(first_row.sgst_rate or 0) if first_row else 0
+    igst_rate = float(first_row.igst_rate or 0) if first_row else 0
 
-	sales_order.insert(ignore_permissions=True)
-	sales_order.add_comment("Info", f"Auto-created from Dish {source.name}")
+    if igst_rate > 0:
+        sales_order.append("taxes", {
+            "charge_type": "On Net Total",
+            "account_head": "Output Tax IGST - EUPL",
+            "description": "IGST",
+            "rate": igst_rate,
+        })
+    else:
+        if cgst_rate > 0:
+            sales_order.append("taxes", {
+                "charge_type": "On Net Total",
+                "account_head": "Output Tax CGST - EUPL",
+                "description": "CGST",
+                "rate": cgst_rate,
+            })
+        if sgst_rate > 0:
+            sales_order.append("taxes", {
+                "charge_type": "On Net Total",
+                "account_head": "Output Tax SGST - EUPL",
+                "description": "SGST",
+                "rate": sgst_rate,
+            })
 
-	frappe.msgprint(f"Sales Order {sales_order.name} created successfully.")
+    sales_order.custom_total_gst = source.gst_amount
 
-	return sales_order.name
+    sales_order.insert(ignore_permissions=True)
+    sales_order.add_comment("Info", f"Auto-created from Dish {source.name}")
+
+    frappe.msgprint(f"Sales Order {sales_order.name} created successfully.")
+
+    return sales_order.name

@@ -7,6 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "item_name",
+  "column_break_tbqu",
+  "warranty_years",
   "column_break_nzkx",
   "quantity",
   "column_break_lppy",
@@ -15,7 +18,9 @@
   "rate",
   "column_break_iyxm",
   "amount",
+  "gst_hsn_code",
   "section_break_vfjp",
+  "description",
   "custom_cgst_rate",
   "custom_cgst_amount",
   "custom_sgst_rate",
@@ -111,13 +116,40 @@
    "fieldname": "custom_igst_amount",
    "fieldtype": "Float",
    "label": "IGST Amt"
+  },
+  {
+   "fieldname": "column_break_tbqu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "warranty_years",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Warrenty"
+  },
+  {
+   "fieldname": "gst_hsn_code",
+   "fieldtype": "Data",
+   "label": "HSN Code"
+  },
+  {
+   "fetch_from": "item.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-06 13:37:14.575405",
+ "modified": "2026-07-11 12:13:13.020239",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice Items",

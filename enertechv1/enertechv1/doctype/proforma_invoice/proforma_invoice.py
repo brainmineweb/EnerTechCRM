@@ -426,19 +426,20 @@ def ping_test():
 @frappe.whitelist()
 def make_proforma_invoice(source_name, target_doc=None):
 	opportunity = frappe.get_doc("Opportunity", frappe.get_value("Quotation", source_name, "custom_opportunity_reference"))
+	lead = frappe.get_doc("Lead", opportunity.party_name) if opportunity.party_name else None
 	customer = opportunity.contact_person
 	customer_phone = opportunity.phone or opportunity.contact_mobile or opportunity.phone_ext
 	customer_email = opportunity.contact_email
 	quotation = frappe.get_doc("Quotation", source_name)
 	proforma_invoice = frappe.new_doc("Proforma Invoice")
-
+	proforma_invoice.modeterms_of_payment = quotation.payment_terms_template
+	proforma_invoice.buyer_gstin = lead.custom_gst_number
 	proforma_invoice.quotation = quotation.name
 	proforma_invoice.date = frappe.utils.today()
 	proforma_invoice.buyer = quotation.customer_name or quotation.party_name
 	proforma_invoice.buyer_name = customer
 	proforma_invoice.buyers_email = customer_email
 	proforma_invoice.buyers_phone_no = customer_phone
-	proforma_invoice.buyer_gstin = quotation.get("billing_address_gstin")
 	proforma_invoice.address = quotation.get("custom_address")
 	proforma_invoice.total = quotation.total
 	proforma_invoice.total_gst = quotation.custom_total_gst
@@ -447,8 +448,11 @@ def make_proforma_invoice(source_name, target_doc=None):
 	for item in quotation.items:
 		proforma_invoice.append("items", {
 			"item": item.item_code,
+			"description": item.technical_description,
 			"quantity": item.qty,
+			"warrenty" : item.warranty_years,
 			"uom": item.uom,
+			"hsn_code": item.gst_hsn_code,
 			"rate": item.rate,
 			"amount": item.amount,
 			"custom_cgst_rate": item.custom_cgst_rate,
@@ -511,7 +515,10 @@ def make_dish(source_name, target_doc=None):
 	dish.mode_of_dispatch = proforma_invoice.dispatched_through
 	dish.terms_of_delivery = proforma_invoice.freight_terms
 
-	dish.dispatch_to_name = proforma_invoice.buyer
+	dish.invoice_to_name = proforma_invoice.buyer
+	dish.invoice_to_address = proforma_invoice.address
+
+	dish.dispatch_to_name = proforma_invoice.customer
 	dish.dispatch_to_address = proforma_invoice.consignee_address
 
 	dish.sub_total = proforma_invoice.total
@@ -525,6 +532,14 @@ def make_dish(source_name, target_doc=None):
 			"uom": row.uom,
 			"rate": row.rate,
 			"amount": row.amount,
+			"description":row.description,
+			"hsn_code": row.gst_hsn_code,
+			"cgst_rate": row.custom_cgst_rate,
+			"cgst_amount": row.custom_cgst_amount,
+			"sgst_rate": row.custom_sgst_rate,
+			"sgst_amount": row.custom_sgst_amount,
+			"igst_rate": row.custom_igst_rate,
+			"igst_amount": row.custom_igst_amount,
 		})
 
 	return dish

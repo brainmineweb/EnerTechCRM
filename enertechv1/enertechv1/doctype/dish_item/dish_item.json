@@ -8,12 +8,21 @@
  "engine": "InnoDB",
  "field_order": [
   "item_code",
-  "item_name",
-  "description",
-  "qty",
   "uom",
+  "hsn_code",
+  "description",
+  "column_break_ozns",
   "rate",
-  "amount"
+  "qty",
+  "amount",
+  "warrenty",
+  "section_break_wodq",
+  "cgst_rate",
+  "cgst_amt",
+  "sgst_rate",
+  "sgst_amount",
+  "igst_rate",
+  "igst_amt"
  ],
  "fields": [
   {
@@ -23,14 +32,6 @@
    "label": "Item",
    "options": "Item",
    "reqd": 1
-  },
-  {
-   "fetch_from": "item_code.item_name",
-   "fieldname": "item_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Item Name",
-   "read_only": 1
   },
   {
    "fetch_from": "item_code.description",
@@ -48,7 +49,6 @@
   {
    "fieldname": "uom",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "UOM",
    "options": "UOM"
   },
@@ -65,13 +65,63 @@
    "in_list_view": 1,
    "label": "Amount",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ozns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hsn_code",
+   "fieldtype": "Data",
+   "label": "HSN Code"
+  },
+  {
+   "fieldname": "warrenty",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Warrenty"
+  },
+  {
+   "fieldname": "section_break_wodq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "cgst_rate",
+   "fieldtype": "Data",
+   "label": "CGST (%)"
+  },
+  {
+   "fieldname": "cgst_amt",
+   "fieldtype": "Data",
+   "label": "CGST Amt"
+  },
+  {
+   "fieldname": "sgst_rate",
+   "fieldtype": "Data",
+   "label": "SGST (%)"
+  },
+  {
+   "fieldname": "sgst_amount",
+   "fieldtype": "Data",
+   "label": "SGST Amt"
+  },
+  {
+   "fieldname": "igst_rate",
+   "fieldtype": "Data",
+   "label": "IGST (%)"
+  },
+  {
+   "fieldname": "igst_amt",
+   "fieldtype": "Data",
+   "label": "IGST Amt"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-10 10:39:32.952598",
+ "modified": "2026-07-11 10:31:52.620255",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish Item",

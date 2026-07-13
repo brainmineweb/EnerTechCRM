@@ -2,13 +2,14 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "field:proforma_invoice_no",
- "creation": "2026-07-10 11:35:59.205737",
+ "creation": "2026-06-30 12:19:47.779246",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "section_break_vz7h",
   "proforma_invoice_no",
   "quotation",
+  "test",
   "column_break_asjh",
   "date",
   "column_break_ffpf",
@@ -26,9 +27,7 @@
   "address",
   "buyers_phone_no",
   "buyers_email",
-  "by_verbal",
-  "by_po",
-  "by_email",
+  "order_confirmation_by",
   "section_break_pkwm",
   "customer_same_as_consignee",
   "customer",
@@ -45,8 +44,8 @@
   "freight_terms",
   "column_break_hdqp",
   "suppliers_ref",
-  "warranty",
   "other_references",
+  "amount",
   "column_break_pkdg",
   "delivery_date",
   "modeterms_of_payment",
@@ -160,13 +159,13 @@
    "fieldname": "dispatched_through",
    "fieldtype": "Select",
    "label": "Dispatched Through",
-   "options": "By Road\nBy Water\nBy Air"
+   "options": "By Road\nBy Sea\nBy Air"
   },
   {
    "fieldname": "freight_terms",
    "fieldtype": "Select",
    "label": "Freight Terms",
-   "options": "Extra\nTo Pay\nIncluded, Paid"
+   "options": "Extra\nTo Pay\nIncluded\nPaid"
   },
   {
    "fieldname": "column_break_hdqp",
@@ -176,11 +175,6 @@
    "fieldname": "suppliers_ref",
    "fieldtype": "Data",
    "label": "Supplier's Ref"
-  },
-  {
-   "fieldname": "warranty",
-   "fieldtype": "Data",
-   "label": "Warranty"
   },
   {
    "fieldname": "other_references",
@@ -243,24 +237,6 @@
    "search_index": 1
   },
   {
-   "default": "0",
-   "fieldname": "by_po",
-   "fieldtype": "Check",
-   "label": "By Po"
-  },
-  {
-   "default": "0",
-   "fieldname": "by_verbal",
-   "fieldtype": "Check",
-   "label": "By Verbal"
-  },
-  {
-   "default": "0",
-   "fieldname": "by_email",
-   "fieldtype": "Check",
-   "label": "By Email"
-  },
-  {
    "fieldname": "proforma_invoice_no",
    "fieldtype": "Data",
    "label": "Proforma Invoice No",
@@ -294,12 +270,11 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
    "fieldname": "approval_status",
    "fieldtype": "Select",
    "label": "Approval Status",
    "options": "\nNeeds Approval\nApproved",
-   "read_only": 1
+   "permlevel": 1
   },
   {
    "fieldname": "buyers_phone_no",
@@ -355,13 +330,35 @@
    "fieldname": "total_with_gst",
    "fieldtype": "Currency",
    "label": "Total With GST"
+  },
+  {
+   "fieldname": "test",
+   "fieldtype": "Data",
+   "label": "Test"
+  },
+  {
+   "depends_on": "eval:doc.freight_terms==\"Paid\" || doc.freight_terms==\"Included\"",
+   "fieldname": "amount",
+   "fieldtype": "Data",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "order_confirmation_by",
+   "fieldtype": "Select",
+   "label": "Order Confirmation By",
+   "options": "\nBy Email\nBy Call\nBy Po"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-07-10 11:53:48.711544",
+ "links": [
+  {
+   "link_doctype": "Sales Order",
+   "link_fieldname": "custom_proforma_invoice"
+  }
+ ],
+ "modified": "2026-07-10 17:12:19.173821",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
