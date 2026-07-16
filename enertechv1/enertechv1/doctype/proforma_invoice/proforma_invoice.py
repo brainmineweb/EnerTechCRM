@@ -53,7 +53,7 @@ class ProformaInvoice(Document):
 	def create_customer(self, customer_name=None):
 		"""Create Customer if it does not already exist, return the customer name (str)."""
 
-		customer = frappe.db.exists("Customer", {"customer_name": customer_name} , "name")
+		customer = frappe.db.exists("Customer", {"customer_name": customer_name}, "name")
 
 		# Customer already exists
 		if customer:
@@ -371,7 +371,7 @@ class ProformaInvoice(Document):
 			now=True,
 			send_priority=0
 		)
-		
+
 
 
 	@frappe.whitelist()
@@ -385,7 +385,7 @@ class ProformaInvoice(Document):
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
 		prefix = f"EUPL/{year}/{month}/"
- 
+
 		# Get ALL PIs for this year/month (including amended ones)
 		all_pis = frappe.get_all(
 			"Proforma Invoice",
@@ -394,14 +394,14 @@ class ProformaInvoice(Document):
 			],
 			fields=["proforma_invoice_no", "docstatus"]
 		)
- 
+
 		max_number = 0
- 
+
 		for pi in all_pis:
 			# Skip amended/cancelled docs (docstatus=2)
 			if pi.docstatus == 2:
 				continue
-			
+
 			# Extract the number from "EUPL/26/01/045"
 			try:
 				parts = pi.proforma_invoice_no.split("/")
@@ -410,11 +410,11 @@ class ProformaInvoice(Document):
 					max_number = max(max_number, num)
 			except (ValueError, IndexError):
 				pass
- 
+
 		# Next number is always max + 1
 		next_number = max_number + 1
 		number = f"{next_number:03d}"  # zero-padded to 3 digits
- 
+
 		series = f"{prefix}{number}"
 		self.proforma_invoice_no = series
 		self.naming_series = series
@@ -425,15 +425,27 @@ def ping_test():
 
 @frappe.whitelist()
 def make_proforma_invoice(source_name, target_doc=None):
-	opportunity = frappe.get_doc("Opportunity", frappe.get_value("Quotation", source_name, "custom_opportunity_reference"))
-	lead = frappe.get_doc("Lead", opportunity.party_name) if opportunity.party_name else None
+	quotation = frappe.get_doc("Quotation", source_name)
+
+	# ---- Resolve Opportunity (guard: quotation may not have one linked) ----
+	opportunity_name = quotation.get("custom_opportunity_reference")
+	if not opportunity_name:
+		frappe.throw("This Quotation has no linked Opportunity (custom_opportunity_reference is empty).")
+
+	opportunity = frappe.get_doc("Opportunity", opportunity_name)
+
+	# ---- Resolve Lead (guard: party may be a Customer, not a Lead) ----
+	lead = None
+	if opportunity.party_name and opportunity.opportunity_from == "Lead":
+		lead = frappe.get_doc("Lead", opportunity.party_name)
+
 	customer = opportunity.contact_person
 	customer_phone = opportunity.phone or opportunity.contact_mobile or opportunity.phone_ext
 	customer_email = opportunity.contact_email
-	quotation = frappe.get_doc("Quotation", source_name)
+
 	proforma_invoice = frappe.new_doc("Proforma Invoice")
 	proforma_invoice.modeterms_of_payment = quotation.payment_terms_template
-	proforma_invoice.buyer_gstin = lead.custom_gst_number
+	proforma_invoice.buyer_gstin = lead.custom_gst_number if lead else None
 	proforma_invoice.quotation = quotation.name
 	proforma_invoice.date = frappe.utils.today()
 	proforma_invoice.buyer = quotation.customer_name or quotation.party_name
@@ -449,11 +461,11 @@ def make_proforma_invoice(source_name, target_doc=None):
 		proforma_invoice.append("items", {
 			"item": item.item_code,
 			"item_name": item.item_name,
-			"description": strip_html_tags(item.technical_description),
+			"description": strip_html_tags(item.technical_description or item.description or ""),
 			"quantity": item.qty,
 			"warranty_years": item.warranty_years,
 			"uom": item.uom,
-			"hsn_code": item.gst_hsn_code,
+			"gst_hsn_code": item.gst_hsn_code,
 			"rate": item.rate,
 			"amount": item.amount,
 			"custom_cgst_rate": item.custom_cgst_rate,
@@ -533,7 +545,7 @@ def make_dish(source_name, target_doc=None):
 			"uom": row.uom,
 			"rate": row.rate,
 			"amount": row.amount,
-			"description":row.description,
+			"description": row.description,
 			"hsn_code": row.gst_hsn_code,
 			"cgst_rate": row.custom_cgst_rate,
 			"cgst_amount": row.custom_cgst_amount,
@@ -544,4 +556,3 @@ def make_dish(source_name, target_doc=None):
 		})
 
 	return dish
-
