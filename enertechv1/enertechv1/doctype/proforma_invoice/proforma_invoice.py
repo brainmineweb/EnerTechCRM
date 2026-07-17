@@ -9,6 +9,29 @@ import re
 from frappe.utils import getdate, nowdate
 from frappe.utils import strip_html_tags
 
+
+def html_to_text_with_breaks(html):
+	"""Convert HTML to plain text while preserving line breaks."""
+	if not html:
+		return ""
+
+	# <br>, <br/>, <br /> -> newline
+	text = re.sub(r"<br\s*/?>", "\n", html, flags=re.IGNORECASE)
+
+	# closing block tags -> newline
+	text = re.sub(r"</(p|div|li|tr|h[1-6])>", "\n", text, flags=re.IGNORECASE)
+
+	# strip remaining tags
+	text = strip_html_tags(text)
+
+	# clean up: trim each line, collapse 3+ newlines into 2
+	lines = [line.strip() for line in text.split("\n")]
+	text = "\n".join(lines)
+	text = re.sub(r"\n{3,}", "\n\n", text).strip()
+
+	return text
+
+
 class ProformaInvoice(Document):
 
 	def before_insert(self):
@@ -461,7 +484,7 @@ def make_proforma_invoice(source_name, target_doc=None):
 		proforma_invoice.append("items", {
 			"item": item.item_code,
 			"item_name": item.item_name,
-			"description": strip_html_tags(item.technical_description or item.description or ""),
+			"description": html_to_text_with_breaks(item.technical_description or item.description or ""),
 			"quantity": item.qty,
 			"warranty_years": item.warranty_years,
 			"uom": item.uom,
@@ -470,9 +493,10 @@ def make_proforma_invoice(source_name, target_doc=None):
 			"amount": item.amount,
 			"custom_cgst_rate": item.custom_cgst_rate,
 			"custom_cgst_amount": item.custom_cgst_amount,
+			"custom_igst_rate": item.custom_igst_rate,
+			"custom_cgst_amount": item.custom_cgst_amount,
 			"custom_sgst_rate": item.custom_sgst_rate,
 			"custom_sgst_amount": item.custom_sgst_amount,
-			"custom_igst_rate": item.custom_igst_rate,
 			"custom_igst_amount": item.custom_igst_amount,
 		})
 
