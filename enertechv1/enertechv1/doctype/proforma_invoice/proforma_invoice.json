@@ -38,9 +38,9 @@
   "customers_phone_no",
   "customer_email",
   "dispatch_and_references_section",
-  "delivery_note",
   "dispatched_through",
   "freight_terms",
+  "delivery_note",
   "column_break_hdqp",
   "suppliers_ref",
   "other_references",
@@ -147,12 +147,6 @@
    "fieldname": "dispatch_and_references_section",
    "fieldtype": "Section Break",
    "label": "Dispatch and References"
-  },
-  {
-   "fieldname": "delivery_note",
-   "fieldtype": "Link",
-   "label": "Delivery Note",
-   "options": "Delivery Note"
   },
   {
    "fieldname": "dispatched_through",
@@ -341,13 +335,18 @@
    "fieldtype": "Select",
    "label": "Order Confirmation By",
    "options": "\nBy Email\nBy Call\nBy Po"
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Data",
+   "label": "Delivery Note"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-07-14 09:50:42.813002",
+ "modified": "2026-07-17 15:51:41.467349",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
