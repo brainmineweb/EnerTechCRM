@@ -397,48 +397,40 @@ class ProformaInvoice(Document):
 
 
 
+
 	@frappe.whitelist()
 	def generate_series(self):
-		"""
-		Generate PI number only on submit.
-		Finds the MAX number in the sequence, ignores amended/cancelled docs.
-		Next number = max + 1 (always increments, never reuses gaps).
-		"""
+		"""Generate PI number. Numbers are never reused, even from cancelled docs."""
 		today = getdate(nowdate())
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
 		prefix = f"EUPL/{year}/{month}/"
 
-		# Get ALL PIs for this year/month (including amended ones)
-		all_pis = frappe.get_all(
-			"Proforma Invoice",
-			filters=[
-				["proforma_invoice_no", "like", f"{prefix}%"]
-			],
-			fields=["proforma_invoice_no", "docstatus"]
-		)
+		rows = frappe.db.sql("""
+			select name, proforma_invoice_no
+			from `tabProforma Invoice`
+			where name like %(p)s or proforma_invoice_no like %(p)s
+		""", {"p": f"{prefix}%"}, as_dict=True)
+
+		pattern = re.compile(r"^" + re.escape(prefix) + r"(\d+)")
 
 		max_number = 0
+		for row in rows:
+			for value in (row.proforma_invoice_no, row.name):
+				if not value:
+					continue
+				match = pattern.match(value)
+				if match:
+					max_number = max(max_number, int(match.group(1)))
 
-		for pi in all_pis:
-			# Skip amended/cancelled docs (docstatus=2)
-			if pi.docstatus == 2:
-				continue
-
-			# Extract the number from "EUPL/26/01/045"
-			try:
-				parts = pi.proforma_invoice_no.split("/")
-				if len(parts) == 4:
-					num = int(parts[3])
-					max_number = max(max_number, num)
-			except (ValueError, IndexError):
-				pass
-
-		# Next number is always max + 1
 		next_number = max_number + 1
-		number = f"{next_number:03d}"  # zero-padded to 3 digits
+		series = f"{prefix}{next_number:03d}"
 
-		series = f"{prefix}{number}"
+		# safety net against any leftover row occupying the name
+		while frappe.db.exists("Proforma Invoice", series):
+			next_number += 1
+			series = f"{prefix}{next_number:03d}"
+
 		self.proforma_invoice_no = series
 		self.naming_series = series
 
