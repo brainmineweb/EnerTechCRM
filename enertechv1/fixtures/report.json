@@ -7325,11 +7325,11 @@
   "javascript": null,
   "json": null,
   "letter_head": "Enertech Standard Letterhead",
-  "modified": "2026-06-15 17:23:24.711401",
+  "modified": "2026-07-23 12:39:58.099169",
   "module": "Selling",
   "name": "Quotation Master",
   "prepared_report": 0,
-  "query": "SELECT\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.name ELSE '' END AS \"Opportunity:Link/Opportunity:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.creation ELSE NULL END AS \"Opportunity Created:Datetime:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN COALESCE(u.full_name, o.opportunity_owner) ELSE '' END AS \"Sales Person:Data:140\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN\n        (\n            SELECT GROUP_CONCAT(\n                COALESCE(oi.item_name, oi.item_code)\n                ORDER BY oi.idx SEPARATOR ', '\n            )\n            FROM `tabOpportunity Item` oi\n            WHERE oi.parent = o.name\n        )\n        ELSE ''\n    END AS \"Opportunity Items:Data:200\",\n\n    CASE\n        WHEN qi.idx = 1 OR qi.idx IS NULL THEN\n            CASE\n                WHEN q.name IS NULL THEN 'No'\n                ELSE 'Yes'\n            END\n        ELSE ''\n    END AS \"Quotation Created:Data:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN l.company_name ELSE '' END AS \"Title:Data:150\",\n\n    CASE\n        WHEN q.name IS NULL THEN ''\n        ELSE qi.item_name\n    END AS \"Item:Data:180\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.transaction_date ELSE NULL END AS \"Quotation Date:Date:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.quotation_sent_date ELSE NULL END AS \"Quotation Sent Date:Date:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.contact_mobile ELSE '' END AS \"Mobile:Data:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.contact_email ELSE '' END AS \"Email:Data:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.city ELSE '' END AS \"City:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.custom_state ELSE '' END AS \"State:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.custom_country_link ELSE '' END AS \"Country:Data:100\",\n\n    qi.qty AS \"Qty:Float:60\",\n\n    qi.rate AS \"Rate:Currency:100\",\n\n    qi.amount AS \"Amount:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.total ELSE NULL END AS \"Total:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.custom_total_gst ELSE NULL END AS \"Total GST:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.custom_total_with_gst ELSE NULL END AS \"Total With GST:Currency:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.expected_closing ELSE NULL END AS \"Expected Closing Date:Date:140\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.status ELSE '' END AS \"Opportunity Status:Data:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.source ELSE '' END AS \"Source:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.latest_inquiry_status ELSE '' END AS \"Latest Inquiry Status:Data:150\"\n\nFROM `tabOpportunity` o\n\nLEFT JOIN `tabLead` l\n    ON l.name = o.party_name\n\nLEFT JOIN `tabQuotation` q\n    ON q.opportunity = o.name\n    AND q.docstatus < 2\n\nLEFT JOIN `tabQuotation Item` qi\n    ON qi.parent = q.name\n\nLEFT JOIN `tabUser` u\n    ON u.name = o.opportunity_owner\n\nORDER BY\n    o.creation DESC,\n    q.name,\n    qi.idx;",
+  "query": "SELECT\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.name ELSE '' END AS \"Opportunity:Link/Opportunity:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.creation ELSE NULL END AS \"Opportunity Created:Datetime:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN COALESCE(u.full_name, o.opportunity_owner) ELSE '' END AS \"Sales Person:Data:140\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN\n        (\n            SELECT GROUP_CONCAT(\n                COALESCE(oi.item_name, oi.item_code)\n                ORDER BY oi.idx SEPARATOR ', '\n            )\n            FROM `tabOpportunity Item` oi\n            WHERE oi.parent = o.name\n        )\n        ELSE ''\n    END AS \"Opportunity Items:Data:200\",\n\n    CASE\n        WHEN qi.idx = 1 OR qi.idx IS NULL THEN\n            CASE\n                WHEN q.name IS NULL THEN 'No'\n                ELSE 'Yes'\n            END\n        ELSE ''\n    END AS \"Quotation Created:Data:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN l.company_name ELSE '' END AS \"Title:Data:150\",\n\n    CASE\n        WHEN q.name IS NULL THEN ''\n        ELSE qi.item_name\n    END AS \"Item:Data:180\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.transaction_date ELSE NULL END AS \"Quotation Date:Date:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.quotation_sent_date ELSE NULL END AS \"Quotation Sent Date:Date:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.contact_mobile ELSE '' END AS \"Mobile:Data:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.contact_email ELSE '' END AS \"Email:Data:150\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.city ELSE '' END AS \"City:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.custom_state ELSE '' END AS \"State:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.custom_country_link ELSE '' END AS \"Country:Data:100\",\n\n    qi.qty AS \"Qty:Float:60\",\n\n    qi.rate AS \"Rate:Currency:100\",\n\n    qi.amount AS \"Amount:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.total ELSE NULL END AS \"Total:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.custom_total_gst ELSE NULL END AS \"Total GST:Currency:120\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN q.custom_total_with_gst ELSE NULL END AS \"Total With GST:Currency:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.expected_closing ELSE NULL END AS \"Expected Closing Date:Date:140\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.status ELSE '' END AS \"Opportunity Status:Data:130\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.source ELSE '' END AS \"Source:Data:100\",\n\n    CASE WHEN qi.idx = 1 OR qi.idx IS NULL THEN o.custom_latest_inquiry_status ELSE '' END AS \"Latest Inquiry Status:Data:150\"\n\nFROM `tabOpportunity` o\n\nLEFT JOIN `tabLead` l\n    ON l.name = o.party_name\n\nLEFT JOIN `tabQuotation` q\n    ON q.opportunity = o.name\n    AND q.docstatus < 2\n\nLEFT JOIN `tabQuotation Item` qi\n    ON qi.parent = q.name\n\nLEFT JOIN `tabUser` u\n    ON u.name = o.opportunity_owner\n\nORDER BY\n    o.creation DESC,\n    q.name,\n    qi.idx;",
   "ref_doctype": "Quotation",
   "reference_report": null,
   "report_name": "Quotation Master",
@@ -7737,20 +7737,45 @@
   "disabled": 0,
   "docstatus": 0,
   "doctype": "Report",
-  "filters": [],
+  "filters": [
+   {
+    "default": "",
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "From Date",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Opportunity by sales person month wise report",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": "",
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "To Date",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Opportunity by sales person month wise report",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
   "is_standard": "No",
   "javascript": null,
   "json": null,
   "letter_head": "Enertech Standard Letterhead",
-  "modified": "2026-05-30 10:39:43.494457",
+  "modified": "2026-08-10 18:33:47.447390",
   "module": "CRM",
   "name": "Opportunity by sales person month wise report",
   "prepared_report": 0,
-  "query": "SELECT\n    IFNULL(opportunity_owner, 'Unassigned') AS \"Sales Person\",\n\n    SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS \"Open\",\n    SUM(CASE WHEN status = 'Converted' THEN 1 ELSE 0 END) AS \"Converted\",\n    SUM(CASE WHEN status = 'Quotation' THEN 1 ELSE 0 END) AS \"Quotation\",\n\n    SUM(CASE WHEN latest_inquiry_status = 'Hot' THEN 1 ELSE 0 END) AS \"Hot\",\n    SUM(CASE WHEN latest_inquiry_status = 'Warm' THEN 1 ELSE 0 END) AS \"Warm\",\n    SUM(CASE WHEN latest_inquiry_status = 'Cold' THEN 1 ELSE 0 END) AS \"Cold\",\n\n    COUNT(*) AS \"Total\"\n\nFROM `tabOpportunity`\n\nWHERE\n    MONTH(transaction_date) = MONTH(CURDATE())\n    AND YEAR(transaction_date) = YEAR(CURDATE())\n\nGROUP BY opportunity_owner\n\nORDER BY opportunity_owner",
+  "query": "SELECT\n    IFNULL(opportunity_owner, 'Unassigned') AS \"Sales Person\",\n\n    SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS \"Open\",\n    SUM(CASE WHEN status = 'Converted' THEN 1 ELSE 0 END) AS \"Converted\",\n    SUM(CASE WHEN status = 'Quotation' THEN 1 ELSE 0 END) AS \"Quotation\",\n\n    SUM(CASE WHEN latest_inquiry_status = 'Hot' THEN 1 ELSE 0 END) AS \"Hot\",\n    SUM(CASE WHEN latest_inquiry_status = 'Warm' THEN 1 ELSE 0 END) AS \"Warm\",\n    SUM(CASE WHEN latest_inquiry_status = 'Cold' THEN 1 ELSE 0 END) AS \"Cold\",\n\n    COUNT(*) AS \"Total\"\n\nFROM `tabOpportunity`\n\nWHERE\n    transaction_date BETWEEN COALESCE(%(from_date)s, '2000-01-01')\n    AND COALESCE(%(to_date)s, CURDATE())\n\nGROUP BY opportunity_owner\n\nORDER BY opportunity_owner",
   "ref_doctype": "Opportunity",
   "reference_report": null,
   "report_name": "Opportunity by sales person month wise report",
-  "report_script": "def execute(filters=None):\n    user = frappe.session.user\n    admin_roles = set([\"System Manager\", \"Administrator\", \"Sales Manager\", \"CRM Supervisor\"])\n    user_roles = set(frappe.get_roles(user))\n    is_admin = bool(admin_roles & user_roles)\n    columns = [\n        {\"label\": \"Sales Person\", \"fieldname\": \"sales_person\", \"fieldtype\": \"Data\", \"width\": 200},\n        {\"label\": \"Open\", \"fieldname\": \"open\", \"fieldtype\": \"Int\", \"width\": 80},\n        {\"label\": \"Converted\", \"fieldname\": \"converted\", \"fieldtype\": \"Int\", \"width\": 100},\n        {\"label\": \"Quotation\", \"fieldname\": \"quotation\", \"fieldtype\": \"Int\", \"width\": 100},\n        {\"label\": \"Hot\", \"fieldname\": \"hot\", \"fieldtype\": \"Int\", \"width\": 80},\n        {\"label\": \"Warm\", \"fieldname\": \"warm\", \"fieldtype\": \"Int\", \"width\": 80},\n        {\"label\": \"Cold\", \"fieldname\": \"cold\", \"fieldtype\": \"Int\", \"width\": 80},\n        {\"label\": \"Total\", \"fieldname\": \"total\", \"fieldtype\": \"Int\", \"width\": 80},\n    ]\n    if is_admin:\n        where_clause = \"WHERE MONTH(creation) = MONTH(CURDATE()) AND YEAR(creation) = YEAR(CURDATE())\"\n        values = {}\n    else:\n        where_clause = \"WHERE opportunity_owner = %(owner)s AND MONTH(creation) = MONTH(CURDATE()) AND YEAR(creation) = YEAR(CURDATE())\"\n        values = {\"owner\": user}\n    query = \"SELECT IFNULL(opportunity_owner, 'Unassigned') AS sales_person, SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS open, SUM(CASE WHEN status = 'Converted' THEN 1 ELSE 0 END) AS converted, SUM(CASE WHEN status = 'Quotation' THEN 1 ELSE 0 END) AS quotation, SUM(CASE WHEN latest_inquiry_status = 'Hot' THEN 1 ELSE 0 END) AS hot, SUM(CASE WHEN latest_inquiry_status = 'Warm' THEN 1 ELSE 0 END) AS warm, SUM(CASE WHEN latest_inquiry_status = 'Cold' THEN 1 ELSE 0 END) AS cold, COUNT(*) AS total FROM `tabOpportunity` \" + where_clause + \" GROUP BY opportunity_owner ORDER BY opportunity_owner\"\n    return columns, frappe.db.sql(query, values, as_dict=True)\n",
+  "report_script": "",
   "report_type": "Query Report",
   "roles": [
    {
@@ -11389,7 +11414,7 @@
   "javascript": null,
   "json": null,
   "letter_head": "Enertech Standard Letterhead",
-  "modified": "2026-05-30 11:28:34.428447",
+  "modified": "2026-08-08 17:28:04.419230",
   "module": "CRM",
   "name": "Opportunity Product Family Weekly",
   "prepared_report": 0,
@@ -11640,16 +11665,41 @@
   "disabled": 0,
   "docstatus": 0,
   "doctype": "Report",
-  "filters": [],
+  "filters": [
+   {
+    "default": null,
+    "fieldname": "from_date",
+    "fieldtype": "Date",
+    "label": "From Date",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Opportunity by sales person report",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   },
+   {
+    "default": null,
+    "fieldname": "to_date",
+    "fieldtype": "Date",
+    "label": "To Date",
+    "mandatory": 0,
+    "options": null,
+    "parent": "Opportunity by sales person report",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
   "is_standard": "No",
   "javascript": null,
   "json": null,
   "letter_head": "Enertech Standard Letterhead",
-  "modified": "2026-03-13 13:00:16.631463",
+  "modified": "2026-08-10 18:35:07.469607",
   "module": "CRM",
   "name": "Opportunity by sales person report",
   "prepared_report": 0,
-  "query": "SELECT\nIFNULL(opportunity_owner,'Unassigned') AS \"Sales Person\",\n\nSUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS \"Open\",\nSUM(CASE WHEN status = 'Converted' THEN 1 ELSE 0 END) AS \"Converted\",\nSUM(CASE WHEN status = 'Quotation' THEN 1 ELSE 0 END) AS \"Quotation\",\n\nSUM(CASE WHEN latest_inquiry_status = 'Hot' THEN 1 ELSE 0 END) AS \"Hot\",\nSUM(CASE WHEN latest_inquiry_status = 'Warm' THEN 1 ELSE 0 END) AS \"Warm\",\nSUM(CASE WHEN latest_inquiry_status = 'Cold' THEN 1 ELSE 0 END) AS \"Cold\",\n\nCOUNT(*) AS \"Total\"\n\nFROM `tabOpportunity`\n\nGROUP BY opportunity_owner\nORDER BY opportunity_owner",
+  "query": "SELECT\n    IFNULL(opportunity_owner, 'Unassigned') AS \"Sales Person\",\n\n    SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) AS \"Open\",\n    SUM(CASE WHEN status = 'Converted' THEN 1 ELSE 0 END) AS \"Converted\",\n    SUM(CASE WHEN status = 'Quotation' THEN 1 ELSE 0 END) AS \"Quotation\",\n\n    SUM(CASE WHEN latest_inquiry_status = 'Hot' THEN 1 ELSE 0 END) AS \"Hot\",\n    SUM(CASE WHEN latest_inquiry_status = 'Warm' THEN 1 ELSE 0 END) AS \"Warm\",\n    SUM(CASE WHEN latest_inquiry_status = 'Cold' THEN 1 ELSE 0 END) AS \"Cold\",\n\n    COUNT(*) AS \"Total\"\n\nFROM `tabOpportunity`\n\nWHERE\n    transaction_date BETWEEN %(from_date)s AND %(to_date)s\n\nGROUP BY opportunity_owner\n\nORDER BY opportunity_owner",
   "ref_doctype": "Opportunity",
   "reference_report": null,
   "report_name": "Opportunity by sales person report",
@@ -11901,6 +11951,254 @@
    },
    {
     "parent": "Opportunity Source Weekly Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Person"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Enertech Standard Letterhead",
+  "modified": "2026-08-10 10:00:59.834090",
+  "module": "EnerTechv1",
+  "name": "Hot Funnel Quotation Report",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Quotation",
+  "reference_report": null,
+  "report_name": "Hot Funnel Quotation Report",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Owner"
+   },
+   {
+    "parent": "Hot Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Person"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": "{}",
+  "letter_head": "Enertech Standard Letterhead",
+  "modified": "2026-08-10 10:13:25.146727",
+  "module": "EnerTechv1",
+  "name": "Cold Funnel Quotation Report",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Quotation",
+  "reference_report": null,
+  "report_name": "Cold Funnel Quotation Report",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Owner"
+   },
+   {
+    "parent": "Cold Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Person"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Enertech Standard Letterhead",
+  "modified": "2026-08-10 10:57:39.286297",
+  "module": "EnerTechv1",
+  "name": "Warm Funnel Quotation Report",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Quotation",
+  "reference_report": null,
+  "report_name": "Warm Funnel Quotation Report",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Owner"
+   },
+   {
+    "parent": "Warm Funnel Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Person"
+   }
+  ],
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": "Enertech Standard Letterhead",
+  "modified": "2026-08-10 10:58:42.913793",
+  "module": "EnerTechv1",
+  "name": "Total Quotation Report",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Quotation",
+  "reference_report": null,
+  "report_name": "Total Quotation Report",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Total Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Total Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Total Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Total Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Total Quotation Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Owner"
+   },
+   {
+    "parent": "Total Quotation Report",
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Sales Person"
