@@ -9,21 +9,20 @@ app_license = "mit"
 
 # Fixtures to export and include with the app
 fixtures = [
-    # {
-    #     "dt": "Custom Field",
-    #     "filters": [
-    #         ["dt", "in", [
-    #             "Lead",
-    #             "Quotation",
-    #             "Quotation Item",
-    #             "Opportunity",
-    #             "Sales Order",
-    #             "Sales Order Item"
-    #         ]],
-    #         ["is_system_generated", "=", 0]
-    #     ]
-    # },
-    "Custom Field",
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["dt", "in", [
+                "Lead",
+                "Quotation",
+                "Quotation Item",
+                "Opportunity",
+                "Sales Order",
+                "Sales Order Item"
+            ]],
+            ["is_system_generated", "=", 0]
+        ]
+    },
     "Property Setter",
     "Client Script",
     "Server Script",
@@ -52,6 +51,10 @@ fixtures = [
 # 	}
 # ]
 
+
+has_permission = {
+    "Lead": "enertechv1.permissions.lead_has_permission"
+}
 # Includes in <head>
 # ------------------
 

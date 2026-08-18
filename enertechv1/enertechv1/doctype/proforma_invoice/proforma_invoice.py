@@ -335,7 +335,7 @@ class ProformaInvoice(Document):
 		pdf_data = frappe.get_print(
 				self.doctype,
 				self.name,
-				print_format="Proforma Invoice Print",
+				print_format="Proforma Invoice Print 2",
 				as_pdf=True
 		)
 
@@ -575,9 +575,9 @@ def make_proforma_invoice(source_name, target_doc=None):
 		proforma_invoice.append("items", {
 			"item": item.item_code,
 			"item_name": item.item_name,
-			"description": html_to_text_with_breaks(item.technical_description or item.description or ""),
+			"description": html_to_text_with_breaks(item.description or item.description or ""),
 			"quantity": item.qty,
-			"warranty_years": item.warranty_years,
+			"warranty_years": item.custom_warrenty_years,
 			"uom": item.uom,
 			"gst_hsn_code": item.gst_hsn_code,
 			"rate": item.rate,
