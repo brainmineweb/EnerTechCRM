@@ -19,7 +19,8 @@ fixtures = [
                 "Opportunity",
                 "Sales Order",
                 "Sales Order Item"
-            ]]        ]
+            ]],
+        ]
     },
     "Property Setter",
     "Client Script",
@@ -50,8 +51,8 @@ fixtures = [
 # ]
 
 
-has_permission = {
-    "Lead": "enertechv1.permissions.lead_has_permission"
+permission_query_conditions = {
+    "Lead": "enertechv1.permissions.lead_query"
 }
 # Includes in <head>
 # ------------------
