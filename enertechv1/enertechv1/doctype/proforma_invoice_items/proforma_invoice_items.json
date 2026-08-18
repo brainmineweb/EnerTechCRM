@@ -31,6 +31,7 @@
  ],
  "fields": [
   {
+   "columns": 1,
    "fieldname": "item",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -43,6 +44,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 1,
    "fieldname": "quantity",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -64,6 +66,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 1,
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -75,6 +78,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 1,
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -87,8 +91,11 @@
    "fieldtype": "Section Break"
   },
   {
+   "columns": 1,
    "fieldname": "custom_cgst_rate",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "CGST (%)"
   },
   {
@@ -97,8 +104,11 @@
    "label": "CGST Amt"
   },
   {
+   "columns": 1,
    "fieldname": "custom_sgst_rate",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "SGST (%)"
   },
   {
@@ -107,8 +117,11 @@
    "label": "SGST Amt"
   },
   {
+   "columns": 1,
    "fieldname": "custom_igst_rate",
    "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "IGST (%)"
   },
   {
@@ -126,6 +139,7 @@
    "label": "Description"
   },
   {
+   "columns": 1,
    "fieldname": "warranty_years",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -138,6 +152,7 @@
    "label": "HSN Code"
   },
   {
+   "columns": 1,
    "fetch_from": "item.item_name",
    "fieldname": "item_name",
    "fieldtype": "Data",
@@ -154,13 +169,14 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-13 12:23:49.901961",
+ "modified": "2026-08-17 17:12:28.951056",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice Items",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

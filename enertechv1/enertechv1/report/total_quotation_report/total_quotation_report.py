@@ -6,6 +6,36 @@ def execute(filters=None):
 
     columns = [
         {
+            "label": "Customer Name",
+            "fieldname": "customer_name",
+            "fieldtype": "Data",
+            "width": 180
+        },
+        {
+            "label": "Email",
+            "fieldname": "email_id",
+            "fieldtype": "Data",
+            "width": 220
+        },
+        {
+            "label": "Phone",
+            "fieldname": "phone",
+            "fieldtype": "Data",
+            "width": 140
+        },
+        {
+            "label": "State",
+            "fieldname": "state",
+            "fieldtype": "Data",
+            "width": 140
+        },
+        {
+            "label": "Country",
+            "fieldname": "country",
+            "fieldtype": "Data",
+            "width": 140
+        },
+        {
             "label": "Item",
             "fieldname": "item_code",
             "fieldtype": "Link",
@@ -44,14 +74,22 @@ def execute(filters=None):
             "width": 100
         },
         {
-            "label": "Total With GST",
-            "fieldname": "total_with_gst",
+            "label": "Amount",
+            "fieldname": "amount",
+            "fieldtype": "Currency",
+            "width": 130
+        },
+        {
+            "label": "Total",
+            "fieldname": "total",
             "fieldtype": "Currency",
             "width": 150
         }
     ]
 
-    conditions = []
+    conditions = [
+        "q.docstatus != 2"
+    ]
 
     values = {}
 
@@ -105,10 +143,7 @@ def execute(filters=None):
     # BUILD WHERE CONDITION
     # --------------------------------
 
-    where_condition = ""
-
-    if conditions:
-        where_condition = "WHERE " + " AND ".join(conditions)
+    where_condition = "WHERE " + " AND ".join(conditions)
 
     # --------------------------------
     # QUERY
@@ -117,8 +152,16 @@ def execute(filters=None):
     data = frappe.db.sql(
         f"""
         SELECT
+            q.customer_name AS customer_name,
+
+            lead.email_id AS email_id,
+            lead.phone AS phone,
+            lead.custom_state AS state,
+            lead.custom_country_link AS country,
+
             qi.item_code AS item_code,
             qi.item_name AS item_name,
+
             q.name AS quotation,
             q.quotation_sent_date AS quotation_sent_date,
 
@@ -126,7 +169,9 @@ def execute(filters=None):
 
             opp.custom_latest_inquiry_status AS status,
 
-            q.custom_total_with_gst AS total_with_gst
+            qi.amount AS amount,
+
+            q.custom_total_with_gst AS total
 
         FROM `tabQuotation` q
 
@@ -137,14 +182,36 @@ def execute(filters=None):
         INNER JOIN `tabOpportunity` opp
             ON opp.name = q.custom_opportunity_reference
 
+        LEFT JOIN `tabLead` lead
+            ON lead.name = q.party_name
+
+        LEFT JOIN `tabUser` u
+            ON u.name = opp.opportunity_owner
+
         {where_condition}
 
         ORDER BY
             q.quotation_sent_date DESC,
-            q.name DESC
+            q.name DESC,
+            qi.idx ASC
         """,
         values,
         as_dict=True
     )
+
+    # --------------------------------
+    # SHOW TOTAL ONLY ON FIRST ITEM
+    # OF EACH QUOTATION
+    # --------------------------------
+
+    shown_quotations = set()
+
+    for row in data:
+        quotation = row.get("quotation")
+
+        if quotation in shown_quotations:
+            row["total"] = None
+        else:
+            shown_quotations.add(quotation)
 
     return columns, data

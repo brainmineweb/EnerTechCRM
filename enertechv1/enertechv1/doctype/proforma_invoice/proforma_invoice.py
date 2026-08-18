@@ -42,6 +42,7 @@ class ProformaInvoice(Document):
 
 	def before_save(self):
 		self.validate_rate()
+		self.calculate_totals()
 
 	def before_submit(self):
 		buyer = self.create_customer(self.buyer)
@@ -334,9 +335,8 @@ class ProformaInvoice(Document):
 		pdf_data = frappe.get_print(
 				self.doctype,
 				self.name,
-				print_format="proforma invoice 2",
-				as_pdf=True,
-				pdf_generator="chrome"
+				print_format="Proforma Invoice Print",
+				as_pdf=True
 		)
 
 		attachments = [{
@@ -433,6 +433,105 @@ class ProformaInvoice(Document):
 
 		self.proforma_invoice_no = series
 		self.naming_series = series
+
+
+
+	def calculate_totals(self):
+		"""
+		Recalculate item amounts, GST and Proforma Invoice totals
+		every time the document is saved.
+		"""
+
+		total = 0
+		total_gst = 0
+
+		# --------------------------------------------------
+		# Get tax category from linked Quotation
+		# --------------------------------------------------
+		tax_category = None
+
+		if self.quotation:
+			tax_category = frappe.db.get_value(
+				"Quotation",
+				self.quotation,
+				"custom_tax_category"
+			)
+
+		# --------------------------------------------------
+		# Calculate every item
+		# --------------------------------------------------
+		for item in self.items:
+
+			# ----------------------------------------------
+			# Calculate item amount
+			# ----------------------------------------------
+			quantity = flt(item.quantity)
+			rate = flt(item.rate)
+
+			item.amount = quantity * rate
+
+			base_amount = item.amount
+
+			# Add to subtotal
+			total += base_amount
+
+			# ----------------------------------------------
+			# Reset GST amounts
+			# ----------------------------------------------
+			item.custom_cgst_amount = 0
+			item.custom_sgst_amount = 0
+			item.custom_igst_amount = 0
+
+			# ----------------------------------------------
+			# In-State
+			# ----------------------------------------------
+			if tax_category == "In-State":
+
+				# Default GST rates if empty
+				if not flt(item.custom_cgst_rate):
+					item.custom_cgst_rate = 9
+
+				if not flt(item.custom_sgst_rate):
+					item.custom_sgst_rate = 9
+
+				item.custom_cgst_amount = (
+					base_amount * flt(item.custom_cgst_rate)
+				) / 100
+
+				item.custom_sgst_amount = (
+					base_amount * flt(item.custom_sgst_rate)
+				) / 100
+
+			# ----------------------------------------------
+			# Out-State
+			# ----------------------------------------------
+			elif tax_category == "Out-State":
+
+				# Default GST rate if empty
+				if not flt(item.custom_igst_rate):
+					item.custom_igst_rate = 18
+
+				item.custom_igst_amount = (
+					base_amount * flt(item.custom_igst_rate)
+				) / 100
+
+			# ----------------------------------------------
+			# Add item GST to total GST
+			# ----------------------------------------------
+			total_gst += (
+				flt(item.custom_cgst_amount)
+				+ flt(item.custom_sgst_amount)
+				+ flt(item.custom_igst_amount)
+			)
+
+		# --------------------------------------------------
+		# Update Proforma Invoice totals
+		# --------------------------------------------------
+		self.total = total
+		self.total_gst = total_gst
+		self.total_with_gst = total + total_gst
+
+
 
 @frappe.whitelist()
 def ping_test():

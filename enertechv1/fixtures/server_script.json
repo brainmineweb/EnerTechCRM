@@ -313,13 +313,13 @@
   "doctype_event": "Before Save",
   "enable_rate_limit": 0,
   "event_frequency": "All",
-  "modified": "2026-07-30 19:50:08.764642",
+  "modified": "2026-08-18 12:35:08.180155",
   "module": "EnerTechv1",
   "name": "GST",
   "rate_limit_count": 5,
   "rate_limit_seconds": 86400,
   "reference_doctype": "Quotation",
-  "script": "# Server Script: Before Save on Quotation\n\ntotal_gst = 0\n\nfor item in doc.items:\n    base_amount = 0\n    if item.amount:\n        base_amount = item.amount\n    elif item.rate and item.qty:\n        base_amount = item.rate * item.qty\n\n    # reset GST amounts\n    item.custom_cgst_amount = 0\n    item.custom_sgst_amount = 0\n    item.custom_igst_amount = 0\n\n    # In-State logic → CGST + SGST\n    if doc.item_tax_category == \"In-State\":\n        if not item.custom_cgst_rate or item.custom_cgst_rate == 0:\n            item.custom_cgst_rate = 9\n        if not item.custom_sgst_rate or item.custom_sgst_rate == 0:\n            item.custom_sgst_rate = 9\n\n        item.custom_cgst_amount = (base_amount * item.custom_cgst_rate) / 100\n        item.custom_sgst_amount = (base_amount * item.custom_sgst_rate) / 100\n\n    # Out-State logic → IGST\n    elif doc.item_tax_category == \"Out-State\":\n        if not item.custom_igst_rate or item.custom_igst_rate == 0:\n            item.custom_igst_rate = 18\n\n        item.custom_igst_amount = (base_amount * item.custom_igst_rate) / 100\n\n    # update total GST\n    total_gst = total_gst + item.custom_cgst_amount + item.custom_sgst_amount + item.custom_igst_amount\n\n# update parent Quotation GST totals\ndoc.custom_total_gst = total_gst\ndoc.custom_total_with_gst = doc.base_total + total_gst\n",
+  "script": "# ============================================================\n# QUOTATION - GST CALCULATION\n# Server Script\n# Script Type: Before Save\n# DocType: Quotation\n# ============================================================\n\ntotal_gst = 0\n\n\nfor item in doc.items:\n\n    # --------------------------------------------------------\n    # 1. Calculate item base amount\n    # --------------------------------------------------------\n\n    base_amount = 0\n\n    if item.amount:\n        base_amount = item.amount\n\n    elif item.rate and item.qty:\n        base_amount = item.rate * item.qty\n\n\n    # --------------------------------------------------------\n    # 2. Reset all GST rates and amounts\n    # --------------------------------------------------------\n\n    item.custom_cgst_rate = 0\n    item.custom_sgst_rate = 0\n    item.custom_igst_rate = 0\n\n    item.custom_cgst_amount = 0\n    item.custom_sgst_amount = 0\n    item.custom_igst_amount = 0\n\n\n    # --------------------------------------------------------\n    # 3. IN-STATE\n    # CGST 9% + SGST 9%\n    # --------------------------------------------------------\n\n    if doc.custom_tax_category == \"In-State\":\n\n        item.custom_cgst_rate = 9\n        item.custom_sgst_rate = 9\n        item.custom_igst_rate = 0\n\n        item.custom_cgst_amount = (\n            base_amount * item.custom_cgst_rate\n        ) / 100\n\n        item.custom_sgst_amount = (\n            base_amount * item.custom_sgst_rate\n        ) / 100\n\n\n    # --------------------------------------------------------\n    # 4. OUT-STATE\n    # IGST 18%\n    # --------------------------------------------------------\n\n    elif doc.custom_tax_category == \"Out-State\":\n\n        item.custom_cgst_rate = 0\n        item.custom_sgst_rate = 0\n        item.custom_igst_rate = 18\n\n        item.custom_igst_amount = (\n            base_amount * item.custom_igst_rate\n        ) / 100\n\n\n    # --------------------------------------------------------\n    # 5. Add item GST to quotation GST total\n    # --------------------------------------------------------\n\n    total_gst = (\n        total_gst\n        + (item.custom_cgst_amount or 0)\n        + (item.custom_sgst_amount or 0)\n        + (item.custom_igst_amount or 0)\n    )\n\n\n# ============================================================\n# 6. UPDATE QUOTATION GST TOTALS\n# ============================================================\n\ndoc.custom_total_gst = total_gst\n\ndoc.custom_total_with_gst = (\n    (doc.base_total or 0)\n    + total_gst\n)",
   "script_type": "DocType Event"
  },
  {
@@ -332,13 +332,13 @@
   "doctype_event": "After Insert",
   "enable_rate_limit": 0,
   "event_frequency": "All",
-  "modified": "2025-08-21 12:49:53.761217",
+  "modified": "2026-08-17 12:59:01.014213",
   "module": "EnerTechv1",
   "name": "lead greetings 02",
   "rate_limit_count": 5,
   "rate_limit_seconds": 86400,
   "reference_doctype": "Lead",
-  "script": "if doc.email_id:\n    # Load Email Template\n    template = frappe.get_doc(\"Email Template\", \"Lead Introduction Mail\")\n    subject = template.subject\n    message = frappe.render_template(template.response_html, {\"doc\": doc})\n\n    # Get file by exact File URL from File Manager\n    file_url = \"/files/Corp_Product -150124 (1) (1) (1).pdf\"\n    file_doc = frappe.get_doc(\"File\", {\"file_url\": file_url})\n\n    # Send the email\n    frappe.sendmail(\n        recipients=[doc.email_id],\n        subject=subject,\n        message=message,\n        attachments=[{\n            \"fname\": file_doc.file_name,\n            \"fcontent\": file_doc.get_content()\n        }]\n    )\n\n    # Manually log the Communication so it shows in Activity\n    comm = frappe.get_doc({\n        \"doctype\": \"Communication\",\n        \"communication_type\": \"Communication\",\n        \"communication_medium\": \"Email\",\n        \"subject\": subject,\n        \"content\": message,\n        \"recipients\": doc.email_id,\n        \"reference_doctype\": \"Lead\",\n        \"reference_name\": doc.name,\n        \"sent_or_received\": \"Sent\"\n    })\n    comm.insert(ignore_permissions=True)\n",
+  "script": "if doc.email_id:\n    # Load Email Template\n    template = frappe.get_doc(\"Email Template\", \"Lead Introduction Mail\")\n    subject = template.subject\n    message = frappe.render_template(template.response_html, {\"doc\": doc})\n\n    # Get file by exact File URL from File Manager\n    file_url = \"/files/EnerTech Product wise full 2025 New_compressed.pdf\"\n    file_doc = frappe.get_doc(\"File\", {\"file_url\": file_url})\n\n    # Send the email\n    frappe.sendmail(\n        recipients=[doc.email_id],\n        subject=subject,\n        message=message,\n        attachments=[{\n            \"fname\": file_doc.file_name,\n            \"fcontent\": file_doc.get_content()\n        }]\n    )\n\n    # Manually log the Communication so it shows in Activity\n    comm = frappe.get_doc({\n        \"doctype\": \"Communication\",\n        \"communication_type\": \"Communication\",\n        \"communication_medium\": \"Email\",\n        \"subject\": subject,\n        \"content\": message,\n        \"recipients\": doc.email_id,\n        \"reference_doctype\": \"Lead\",\n        \"reference_name\": doc.name,\n        \"sent_or_received\": \"Sent\"\n    })\n    comm.insert(ignore_permissions=True)\n",
   "script_type": "DocType Event"
  },
  {
@@ -473,5 +473,24 @@
   "reference_doctype": null,
   "script": "import frappe\n\nquotation = frappe.form_dict.get(\"quotation\")\n\nq = frappe.get_doc(\"Quotation\", quotation)\n\npi = frappe.new_doc(\"Proforma Invoice\")\n\n# Basic Details\npi.quotation = q.name\npi.customer_name = q.customer_name\npi.opportunity = q.opportunity\npi.currency = q.currency\npi.transaction_date = q.transaction_date\npi.valid_till = q.valid_till\n\n# Custom Fields\npi.lead = q.party_name if hasattr(q, \"party_name\") else \"\"\npi.payment_terms_template = q.payment_terms_template\npi.tax_category = q.tax_category\npi.shipping_rule = q.shipping_rule\n\n# Totals\npi.total = q.total\npi.net_total = q.net_total\npi.total_taxes_and_charges = q.total_taxes_and_charges\npi.grand_total = q.grand_total\npi.rounded_total = q.rounded_total\npi.sales_person = q.custom_sales_person_name\n# Items\nfor item in q.items:\n    pi.append(\"items\", {\n        \"item\": item.item_code,\n        \"item_name\": item.item_name,\n        \"description\": item.description,\n        \"qty\": item.qty,\n        \"uom\": item.uom,\n        \"rate\": item.rate,\n        \"amount\": item.amount\n    })\n\npi.insert(ignore_permissions=True)\n\nfrappe.response[\"message\"] = pi.name",
   "script_type": "API"
+ },
+ {
+  "allow_guest": 0,
+  "api_method": null,
+  "cron_format": null,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Server Script",
+  "doctype_event": "Before Save",
+  "enable_rate_limit": 0,
+  "event_frequency": "All",
+  "modified": "2026-08-18 10:05:20.454511",
+  "module": "EnerTechv1",
+  "name": "assgn user in lead from opportunity",
+  "rate_limit_count": 5,
+  "rate_limit_seconds": 86400,
+  "reference_doctype": "Opportunity",
+  "script": "# Reference DocType: Opportunity\n# Event: After Save\n\nif doc.opportunity_owner and doc.party_name and doc.opportunity_from == \"Lead\":\n\n    # Check whether this user is already assigned to this Lead\n    already_assigned = frappe.db.exists(\n        \"ToDo\",\n        {\n            \"reference_type\": \"Lead\",\n            \"reference_name\": doc.party_name,\n            \"allocated_to\": doc.opportunity_owner,\n            \"status\": \"Open\"\n        }\n    )\n\n    # Add assignment without removing existing users\n    if not already_assigned:\n        frappe.get_doc({\n            \"doctype\": \"ToDo\",\n            \"allocated_to\": doc.opportunity_owner,\n            \"reference_type\": \"Lead\",\n            \"reference_name\": doc.party_name,\n            \"description\": \"Assigned from Opportunity \" + doc.name\n        }).insert(ignore_permissions=True)",
+  "script_type": "DocType Event"
  }
 ]
