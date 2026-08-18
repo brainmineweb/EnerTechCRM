@@ -1824,7 +1824,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2026-08-18 16:41:24.173099",
+  "modified": "2026-08-18 17:22:59.062925",
   "module": "EnerTechv1",
   "name": "Proforma Invoice Print 2",
   "page_number": "Hide",
@@ -1846,6 +1846,6 @@
   "raw_printing": 0,
   "report": null,
   "show_section_headings": 0,
-  "standard": "No"
+  "standard": "Yes"
  }
 ]

@@ -19,9 +19,7 @@ fixtures = [
                 "Opportunity",
                 "Sales Order",
                 "Sales Order Item"
-            ]],
-            ["is_system_generated", "=", 0]
-        ]
+            ]]        ]
     },
     "Property Setter",
     "Client Script",
