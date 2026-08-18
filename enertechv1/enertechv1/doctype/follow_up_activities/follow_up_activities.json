@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-08-17 15:24:19.011873",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_vfze",
+  "follow_up_type",
+  "follw_up_date",
+  "column_break_khcc",
+  "contact_with",
+  "inquiry_status",
+  "next_follow_up_date",
+  "section_break_mxxb",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_vfze",
+   "fieldtype": "Section Break",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "follow_up_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Follow up type",
+   "options": "Phone\nWhatsapp\nEmail"
+  },
+  {
+   "fieldname": "follw_up_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Follow Up Date"
+  },
+  {
+   "fieldname": "column_break_khcc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_with",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Contact with",
+   "options": "Contact"
+  },
+  {
+   "default": "Cold",
+   "fieldname": "inquiry_status",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Inquiry Status",
+   "options": "Cold\nWarm\nHot\nLost"
+  },
+  {
+   "fieldname": "next_follow_up_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Next Follow Up Date"
+  },
+  {
+   "fieldname": "section_break_mxxb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "in_list_view": 1,
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-08-18 15:09:00.038777",
+ "modified_by": "Administrator",
+ "module": "EnerTechv1",
+ "name": "Follow Up Activities",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
