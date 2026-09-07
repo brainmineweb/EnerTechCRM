@@ -10,6 +10,7 @@
   "section_break_cykk",
   "dish_no",
   "date",
+  "company",
   "column_break_vxmo",
   "proforma_invoice",
   "quotation",
@@ -55,11 +56,12 @@
   "standard_or_customized",
   "column_break_vlrn",
   "order_type",
+  "section_break_hilq",
+  "tax_category",
   "section_break_nbev",
   "items",
   "section_break_vllu",
   "sub_total",
-  "gst_rate",
   "column_break_dimp",
   "gst_amount",
   "total",
@@ -81,8 +83,8 @@
   "battery_ah",
   "column_break_uclm",
   "battery_qty",
-  "battery_type",
   "battery_price",
+  "type",
   "section_break_tdkw",
   "product_name",
   "product_make",
@@ -102,12 +104,10 @@
   "load_details",
   "section_break_szfd",
   "transport_mode",
-  "transporter_name",
   "column_break_rnut",
   "payment_for_transporter",
-  "transporter_model",
-  "article_number",
-  "price_including_taxes",
+  "column_break_dsuh",
+  "which_transporter",
   "section_break_yrwq",
   "inspection",
   "warranty_certificate",
@@ -116,13 +116,19 @@
   "operation_manual",
   "installation",
   "section_break_xquf",
+  "price_including_taxes",
+  "column_break_uwzj",
+  "transporter_model",
+  "column_break_gyco",
+  "article_number",
+  "column_break_vude",
   "special_instruction",
   "section_break_wwkw",
   "made_by",
-  "checked_by",
+  "sales_person",
   "column_break_kxmn",
   "verified_by",
-  "authorized_by",
+  "manager",
   "section_break_rsyx",
   "received_by_details"
  ],
@@ -281,7 +287,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "proforma_invoice.modeterms_of_payment",
    "fieldname": "modeterms_of_payment",
    "fieldtype": "Small Text",
    "label": "Mode/Terms of Payment"
@@ -360,11 +365,6 @@
    "label": "Dispatch State"
   },
   {
-   "fieldname": "dispatch_pincode",
-   "fieldtype": "Data",
-   "label": "Dispatch Pincode"
-  },
-  {
    "fieldname": "section_break_tukk",
    "fieldtype": "Section Break",
    "label": "Order Classification"
@@ -410,11 +410,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "gst_rate",
-   "fieldtype": "Percent",
-   "label": "GST Rate"
-  },
-  {
    "fieldname": "column_break_dimp",
    "fieldtype": "Column Break"
   },
@@ -433,7 +428,7 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.scope_of_supply_parent == \"A\" || doc.scope_of_supply_parent == \"B\"",
+   "depends_on": "eval:doc.scope_of_supply_parent == \"Solar Product\"",
    "fieldname": "section_break_gpee",
    "fieldtype": "Section Break",
    "label": "Scope of Supply - PV Panels"
@@ -473,7 +468,7 @@
    "label": "Price"
   },
   {
-   "depends_on": "eval:doc.scope_of_supply_parent == \"A\"",
+   "depends_on": "eval:doc.scope_of_supply_parent == \"Solar Product\" || doc.scope_of_supply_parent == \"Power Product\"",
    "fieldname": "section_break_xnet",
    "fieldtype": "Section Break",
    "label": "Scope of Supply - Battery"
@@ -501,11 +496,6 @@
    "fieldname": "battery_qty",
    "fieldtype": "Data",
    "label": "Qty"
-  },
-  {
-   "fieldname": "battery_type",
-   "fieldtype": "Data",
-   "label": "Type"
   },
   {
    "fieldname": "battery_price",
@@ -610,11 +600,6 @@
    "options": "\nCARGO\nFull Tempo\nPart Load"
   },
   {
-   "fieldname": "transporter_name",
-   "fieldtype": "Data",
-   "label": "Which Transporter"
-  },
-  {
    "fieldname": "column_break_rnut",
    "fieldtype": "Column Break"
   },
@@ -700,12 +685,6 @@
    "options": "User"
   },
   {
-   "fieldname": "checked_by",
-   "fieldtype": "Link",
-   "label": "Checked By",
-   "options": "User"
-  },
-  {
    "fieldname": "column_break_kxmn",
    "fieldtype": "Column Break"
   },
@@ -713,12 +692,6 @@
    "fieldname": "verified_by",
    "fieldtype": "Link",
    "label": "Verified By",
-   "options": "User"
-  },
-  {
-   "fieldname": "authorized_by",
-   "fieldtype": "Link",
-   "label": "Authorized By",
    "options": "User"
   },
   {
@@ -739,6 +712,7 @@
   {
    "fieldname": "scope_of_supply",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Scope of Supply",
    "options": "Solar inverter\nIndustrial Inverter\nOnline Ups\u2028Battery Charger\u2028Static Frequency Converter\nServo Voltage Stabilizer\nBESS"
   },
@@ -750,14 +724,77 @@
    "fieldname": "scope_of_supply_parent",
    "fieldtype": "Select",
    "label": "Scope of Supply Parent",
-   "options": "\nA\nB"
+   "options": "\nSolar Product\nPower Product"
+  },
+  {
+   "default": "ENERTECH UPS PVT LTD",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "section_break_hilq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_category",
+   "fieldtype": "Link",
+   "label": "Tax Category",
+   "options": "Tax Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "dispatch_pincode",
+   "fieldtype": "Data",
+   "label": "Dispatch Pincode"
+  },
+  {
+   "fieldname": "sales_person",
+   "fieldtype": "Link",
+   "label": "Sales Person",
+   "options": "User"
+  },
+  {
+   "fieldname": "manager",
+   "fieldtype": "Link",
+   "label": "Manager",
+   "options": "User"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "label": "Type",
+   "options": "Solar Battery\n\u2060Lithium Battery\n\u2060SMF\n\u2060Lithium\n\u2060NiCad\n\u2060Other"
+  },
+  {
+   "fieldname": "which_transporter",
+   "fieldtype": "Select",
+   "label": "Which Transporter",
+   "options": "TCI\n\u2060Safe Express\n\u2060Gati\n\u2060Delivery\n\u2060VRL\n\u2060Other"
+  },
+  {
+   "fieldname": "column_break_dsuh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_uwzj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gyco",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vude",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-07-13 10:20:13.377204",
+ "modified": "2026-08-26 12:22:59.875069",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish",
@@ -765,6 +802,8 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -779,6 +818,8 @@
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -794,6 +835,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

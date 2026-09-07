@@ -135,24 +135,71 @@ def execute(filters=None):
     data = frappe.db.sql(
         f"""
         SELECT
-            q.customer_name AS customer_name,
 
-            lead.email_id AS email_id,
-            lead.phone AS phone,
-            lead.custom_state AS state,
-            lead.custom_country_link AS country,
+            -- Customer details only on first item row
+            CASE
+                WHEN ROW_NUMBER() OVER (
+                    PARTITION BY q.name
+                    ORDER BY qi.idx
+                ) = 1
+                THEN q.customer_name
+                ELSE NULL
+            END AS customer_name,
 
+            CASE
+                WHEN ROW_NUMBER() OVER (
+                    PARTITION BY q.name
+                    ORDER BY qi.idx
+                ) = 1
+                THEN lead.email_id
+                ELSE NULL
+            END AS email_id,
+
+            CASE
+                WHEN ROW_NUMBER() OVER (
+                    PARTITION BY q.name
+                    ORDER BY qi.idx
+                ) = 1
+                THEN lead.phone
+                ELSE NULL
+            END AS phone,
+
+            CASE
+                WHEN ROW_NUMBER() OVER (
+                    PARTITION BY q.name
+                    ORDER BY qi.idx
+                ) = 1
+                THEN lead.custom_state
+                ELSE NULL
+            END AS state,
+
+            CASE
+                WHEN ROW_NUMBER() OVER (
+                    PARTITION BY q.name
+                    ORDER BY qi.idx
+                ) = 1
+                THEN lead.custom_country_link
+                ELSE NULL
+            END AS country,
+
+            -- Item details on every row
             qi.item_code AS item_code,
             qi.item_name AS item_name,
 
+            -- Quotation details
             q.name AS quotation,
             q.quotation_sent_date AS quotation_sent_date,
 
+            -- Sales person
             opp.opportunity_owner AS sales_person,
+
+            -- Status
             opp.custom_latest_inquiry_status AS status,
 
+            -- Item amount
             qi.amount AS amount,
 
+            -- Total only on first item row
             CASE
                 WHEN ROW_NUMBER() OVER (
                     PARTITION BY q.name

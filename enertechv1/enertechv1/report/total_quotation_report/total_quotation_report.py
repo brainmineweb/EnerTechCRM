@@ -200,8 +200,8 @@ def execute(filters=None):
     )
 
     # --------------------------------
-    # SHOW TOTAL ONLY ON FIRST ITEM
-    # OF EACH QUOTATION
+    # SHOW CUSTOMER DETAILS + TOTAL
+    # ONLY ON FIRST ITEM OF EACH QUOTATION
     # --------------------------------
 
     shown_quotations = set()
@@ -210,6 +210,11 @@ def execute(filters=None):
         quotation = row.get("quotation")
 
         if quotation in shown_quotations:
+            row["customer_name"] = None
+            row["email_id"] = None
+            row["phone"] = None
+            row["state"] = None
+            row["country"] = None
             row["total"] = None
         else:
             shown_quotations.add(quotation)

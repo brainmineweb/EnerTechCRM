@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "name1"
+  "name1",
+  "sort_order"
  ],
  "fields": [
   {
@@ -14,12 +15,17 @@
    "fieldtype": "Data",
    "label": "Name",
    "unique": 1
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-08-17 15:40:41.917694",
+ "modified": "2026-08-19 10:13:47.146138",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Warrenty Years",
@@ -54,6 +60,6 @@
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
- "sort_order": "DESC",
+ "sort_order": "ASC",
  "states": []
 }

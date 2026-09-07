@@ -275,5 +275,6 @@ permission_query_conditions = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 doctype_js = {
-    "Quotation": "public/js/Quotation.js"
+    "Quotation": "public/js/Quotation.js",
+    "Opportunity": "public/js/Opportunity.js"
 }

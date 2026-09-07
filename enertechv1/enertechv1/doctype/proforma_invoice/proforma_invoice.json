@@ -48,6 +48,8 @@
   "column_break_pkdg",
   "delivery_date",
   "modeterms_of_payment",
+  "section_break_zrdu",
+  "tax_category",
   "items_section",
   "items",
   "totals_section",
@@ -340,13 +342,28 @@
    "fieldname": "delivery_note",
    "fieldtype": "Data",
    "label": "Delivery Note"
+  },
+  {
+   "fieldname": "section_break_zrdu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_category",
+   "fieldtype": "Link",
+   "label": "Tax Category",
+   "options": "Tax Category"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-08-16 11:21:43.712382",
+ "links": [
+  {
+   "link_doctype": "Dish",
+   "link_fieldname": "proforma_invoice"
+  }
+ ],
+ "modified": "2026-08-25 10:21:31.915545",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

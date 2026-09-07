@@ -141,11 +141,11 @@
   {
    "columns": 1,
    "fieldname": "warranty_years",
-   "fieldtype": "Link",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Warrenty",
-   "options": "Warrenty Years"
+   "options": "1 Month\n2 Months\n3 Months\n1 Year\n2 Years\n3 Years\n5 Years\n10 Years\n15 Years\n20 Years\n25 Years\nN/A"
   },
   {
    "fieldname": "gst_hsn_code",
@@ -170,7 +170,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-08-18 17:26:56.444093",
+ "modified": "2026-08-19 16:59:54.902363",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice Items",

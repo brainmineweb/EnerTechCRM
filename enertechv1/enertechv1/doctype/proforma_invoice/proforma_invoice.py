@@ -9,6 +9,9 @@ import re
 from frappe.utils import getdate, nowdate
 from frappe.utils import strip_html_tags
 
+# Add to proforma_invoice.py
+# (also add this import near the top of the file)
+from enertechv1.enertechv1.doctype.dish.dish import guess_state_from_address_text, get_company_gst_state
 
 def html_to_text_with_breaks(html):
 	"""Convert HTML to plain text while preserving line breaks."""
@@ -435,27 +438,30 @@ class ProformaInvoice(Document):
 		self.naming_series = series
 
 
-
 	def calculate_totals(self):
 		"""
 		Recalculate item amounts, GST and Proforma Invoice totals
 		every time the document is saved.
+
+		In-State:
+			- CGST + SGST applicable
+			- IGST forced to 0
+
+		Out-State:
+			- IGST applicable
+			- CGST + SGST forced to 0
+
+		Manually entered GST rates are respected and GST amounts
+		are recalculated based on the entered rates.
 		"""
 
 		total = 0
 		total_gst = 0
 
 		# --------------------------------------------------
-		# Get tax category from linked Quotation
+		# Get tax category
 		# --------------------------------------------------
-		tax_category = None
-
-		if self.quotation:
-			tax_category = frappe.db.get_value(
-				"Quotation",
-				self.quotation,
-				"custom_tax_category"
-			)
+		tax_category = self.tax_category
 
 		# --------------------------------------------------
 		# Calculate every item
@@ -470,7 +476,7 @@ class ProformaInvoice(Document):
 
 			item.amount = quantity * rate
 
-			base_amount = item.amount
+			base_amount = flt(item.amount)
 
 			# Add to subtotal
 			total += base_amount
@@ -483,37 +489,64 @@ class ProformaInvoice(Document):
 			item.custom_igst_amount = 0
 
 			# ----------------------------------------------
-			# In-State
+			# IN-STATE
 			# ----------------------------------------------
 			if tax_category == "In-State":
 
-				# Default GST rates if empty
+				# IGST is not applicable for In-State
+				item.custom_igst_rate = 0
+				item.custom_igst_amount = 0
+
+				# Default CGST rate if empty or zero
 				if not flt(item.custom_cgst_rate):
 					item.custom_cgst_rate = 9
 
+				# Default SGST rate if empty or zero
 				if not flt(item.custom_sgst_rate):
 					item.custom_sgst_rate = 9
 
+				# Calculate CGST
 				item.custom_cgst_amount = (
 					base_amount * flt(item.custom_cgst_rate)
 				) / 100
 
+				# Calculate SGST
 				item.custom_sgst_amount = (
 					base_amount * flt(item.custom_sgst_rate)
 				) / 100
 
 			# ----------------------------------------------
-			# Out-State
+			# OUT-STATE
 			# ----------------------------------------------
 			elif tax_category == "Out-State":
 
-				# Default GST rate if empty
-				if not flt(item.custom_igst_rate):
+				# CGST and SGST are not applicable for Out-State
+				item.custom_cgst_rate = 0
+				item.custom_sgst_rate = 0
+
+				item.custom_cgst_amount = 0
+				item.custom_sgst_amount = 0
+
+				# Default IGST rate if empty
+				if item.custom_igst_rate is None or item.custom_igst_rate == "":
 					item.custom_igst_rate = 18
 
+				# Calculate IGST
 				item.custom_igst_amount = (
 					base_amount * flt(item.custom_igst_rate)
 				) / 100
+
+			# ----------------------------------------------
+			# No tax category
+			# ----------------------------------------------
+			else:
+				item.custom_cgst_rate = 0
+				item.custom_sgst_rate = 0
+				item.custom_igst_rate = 0
+
+				item.custom_cgst_amount = 0
+				item.custom_sgst_amount = 0
+				item.custom_igst_amount = 0
 
 			# ----------------------------------------------
 			# Add item GST to total GST
@@ -532,10 +565,79 @@ class ProformaInvoice(Document):
 		self.total_with_gst = total + total_gst
 
 
-
 @frappe.whitelist()
 def ping_test():
 	return "pong from proforma_invoice.py"
+
+@frappe.whitelist()
+def make_dish(source_name, target_doc=None):
+	"""Map a Proforma Invoice into a new Dish, carrying over buyer/order/item data."""
+
+	proforma_invoice = frappe.get_doc("Proforma Invoice", source_name)
+	quotation = frappe.get_doc("Quotation", proforma_invoice.quotation , "name")
+	lead = frappe.get_doc("Lead", quotation.party_name)
+
+	dish = frappe.new_doc("Dish")
+	dish.buyer = proforma_invoice.buyer
+	dish.buyers_name = proforma_invoice.buyer_name
+	dish.buyers_email = proforma_invoice.buyers_email
+	dish.buyers_phone_no = proforma_invoice.buyers_phone_no
+	dish.bueyer_gst_no = proforma_invoice.buyer_gstin
+	dish.buyer_address = proforma_invoice.address
+	dish.customer = proforma_invoice.customer
+	dish.customer_name = proforma_invoice.customer_name
+	dish.customer_phone_no = proforma_invoice.customer_phone_no
+	dish.customer_gstin = proforma_invoice.consignee_gstin
+	dish.customer_address = proforma_invoice.consignee_address
+	dish.delivery_date = proforma_invoice.delivery_date
+	dish.proforma_invoice = proforma_invoice.name
+	dish.buyers_email = proforma_invoice.buyers_email
+	dish.customers_email = proforma_invoice.customer_email
+	dish.quotation = proforma_invoice.quotation
+	dish.tax_category = proforma_invoice.tax_category
+	dish.date = frappe.utils.today()
+	dish.dispatch_state = lead.custom_state
+
+	dish.customer = proforma_invoice.buyer
+	dish.contact_no = proforma_invoice.buyers_phone_no
+	dish.gst_no = proforma_invoice.buyer_gstin
+
+	dish.expected_delivery = proforma_invoice.delivery_date
+	dish.warranty = proforma_invoice.warranty
+	dish.mode_terms_of_payment = proforma_invoice.modeterms_of_payment
+	dish.mode_of_dispatch = proforma_invoice.dispatched_through
+	dish.terms_of_delivery = proforma_invoice.freight_terms
+
+	dish.invoice_to_name = proforma_invoice.buyer
+	dish.invoice_to_address = proforma_invoice.address
+
+	dish.dispatch_to_name = proforma_invoice.customer
+	dish.dispatch_to_address = proforma_invoice.consignee_address
+
+	dish.sub_total = proforma_invoice.total
+	dish.gst_amount = proforma_invoice.total_gst
+	dish.total = proforma_invoice.total_with_gst
+
+	for row in proforma_invoice.items:
+		dish.append("items", {
+			"item_code": row.item,
+			"item_name":row.item_name,
+			"qty": row.quantity,
+			"warrenty":row.warranty_years,
+			"uom": row.uom,
+			"rate": row.rate,
+			"amount": row.amount,
+			"description": row.description,
+			"hsn_code": row.gst_hsn_code,
+			"cgst_rate": row.custom_cgst_rate,
+			"cgst_amt": row.custom_cgst_amount,
+			"sgst_rate": row.custom_sgst_rate,
+			"sgst_amount": row.custom_sgst_amount,
+			"igst_rate": row.custom_igst_rate,
+			"igst_amt": row.custom_igst_amount,
+		})
+
+	return dish
 
 @frappe.whitelist()
 def make_proforma_invoice(source_name, target_doc=None):
@@ -566,10 +668,11 @@ def make_proforma_invoice(source_name, target_doc=None):
 	proforma_invoice.buyer_name = customer
 	proforma_invoice.buyers_email = customer_email
 	proforma_invoice.buyers_phone_no = customer_phone
-	proforma_invoice.address = quotation.get("custom_address")
+	proforma_invoice.address = lead.custom_address
 	proforma_invoice.total = quotation.total
 	proforma_invoice.total_gst = quotation.custom_total_gst
 	proforma_invoice.total_with_gst = quotation.custom_total_with_gst
+	proforma_invoice.tax_category = quotation.custom_tax_category
 
 	for item in quotation.items:
 		proforma_invoice.append("items", {
@@ -608,66 +711,239 @@ def generate_sales_order_series(doc, method=None):
 	doc.custom_sales_order_no = f"EUPL/SO/{year}/{month}/{number}"
 
 
+
 @frappe.whitelist()
-def make_dish(source_name, target_doc=None):
-	"""Map a Proforma Invoice into a new Dish, carrying over buyer/order/item data."""
+def make_sales_order(source_name, target_doc=None):
+	source = frappe.get_doc("Proforma Invoice", source_name)
 
-	proforma_invoice = frappe.get_doc("Proforma Invoice", source_name)
+	# ---------------------------------------------------------
+	# 1. Resolve Customer
+	#    (buyer becomes a real Customer link once PI is submitted;
+	#     fall back to a name lookup just in case)
+	# ---------------------------------------------------------
+	customer = None
 
-	dish = frappe.new_doc("Dish")
-	dish.buyer = proforma_invoice.buyer
-	dish.buyers_name = proforma_invoice.buyer_name
-	dish.buyers_email = proforma_invoice.buyers_email
-	dish.buyers_phone_no = proforma_invoice.buyers_phone_no
-	dish.bueyer_gst_no = proforma_invoice.buyer_gstin
-	dish.buyer_address = proforma_invoice.address
-	dish.customer = proforma_invoice.customer
-	dish.customer_name = proforma_invoice.customer_name
-	dish.customer_phone_no = proforma_invoice.customer_phone_no
-	dish.customer_gstin = proforma_invoice.consignee_gstin
-	dish.customer_address = proforma_invoice.consignee_address
-	dish.delivery_date = proforma_invoice.delivery_date
-	dish.proforma_invoice = proforma_invoice.name
-	dish.buyers_email = proforma_invoice.buyers_email
-	dish.customers_email = proforma_invoice.customer_email
-	dish.quotation = proforma_invoice.quotation
-	dish.date = frappe.utils.today()
+	if source.buyer and frappe.db.exists("Customer", source.buyer):
+		customer = source.buyer
+	else:
+		customer = frappe.db.get_value(
+			"Customer",
+			{"customer_name": source.buyer or source.customer},
+			"name"
+		)
 
-	dish.customer = proforma_invoice.buyer
-	dish.contact_no = proforma_invoice.buyers_phone_no
-	dish.gst_no = proforma_invoice.buyer_gstin
+	if not customer:
+		frappe.throw(
+			f"Customer '{source.buyer or source.customer}' not found. "
+			"Please submit the Proforma Invoice (which creates the Customer) "
+			"before creating a Sales Order."
+		)
 
-	dish.expected_delivery = proforma_invoice.delivery_date
-	dish.warranty = proforma_invoice.warranty
-	dish.mode_terms_of_payment = proforma_invoice.modeterms_of_payment
-	dish.mode_of_dispatch = proforma_invoice.dispatched_through
-	dish.terms_of_delivery = proforma_invoice.freight_terms
+	# ---------------------------------------------------------
+	# 2. Prevent duplicate Sales Order from same PI
+	# ---------------------------------------------------------
+	existing_so = frappe.db.exists(
+		"Sales Order",
+		{"custom_proforma_invoice": source.name}
+	)
 
-	dish.invoice_to_name = proforma_invoice.buyer
-	dish.invoice_to_address = proforma_invoice.address
+	if existing_so:
+		frappe.throw(
+			f"Sales Order {existing_so} already exists for Proforma Invoice {source.name}."
+		)
 
-	dish.dispatch_to_name = proforma_invoice.customer
-	dish.dispatch_to_address = proforma_invoice.consignee_address
+	# ---------------------------------------------------------
+	# 3. Build Sales Order
+	# ---------------------------------------------------------
+	sales_order = frappe.new_doc("Sales Order")
+	sales_order.company = source.company or frappe.defaults.get_user_default("Company")
+	sales_order.ignore_pricing_rule = 1
+	sales_order.customer = customer
+	sales_order.custom_quotation = source.quotation
+	sales_order.custom_proforma_invoice = source.name
 
-	dish.sub_total = proforma_invoice.total
-	dish.gst_amount = proforma_invoice.total_gst
-	dish.total = proforma_invoice.total_with_gst
+	if source.date:
+		sales_order.transaction_date = source.date
 
-	for row in proforma_invoice.items:
-		dish.append("items", {
+	sales_order.delivery_date = source.date
+
+	if source.tax_category:
+		sales_order.tax_category = source.tax_category
+
+	# ---------------------------------------------------------
+	# 4. Add Items
+	# ---------------------------------------------------------
+	if not source.items:
+		frappe.throw(f"Proforma Invoice {source.name} does not contain any items.")
+
+	for row in source.items:
+
+		item = sales_order.append("items", {
 			"item_code": row.item,
+			"item_name": row.item_name,
 			"qty": row.quantity,
 			"uom": row.uom,
 			"rate": row.rate,
-			"amount": row.amount,
-			"description": row.description,
-			"hsn_code": row.gst_hsn_code,
-			"cgst_rate": row.custom_cgst_rate,
-			"cgst_amount": row.custom_cgst_amount,
-			"sgst_rate": row.custom_sgst_rate,
-			"sgst_amount": row.custom_sgst_amount,
-			"igst_rate": row.custom_igst_rate,
-			"igst_amount": row.custom_igst_amount,
+			"delivery_date": source.date,
 		})
 
-	return dish
+		if hasattr(item, "cgst_rate") and row.custom_cgst_rate:
+			item.cgst_rate = row.custom_cgst_rate
+
+		if hasattr(item, "sgst_rate") and row.custom_sgst_rate:
+			item.sgst_rate = row.custom_sgst_rate
+
+		if hasattr(item, "igst_rate") and row.custom_igst_rate:
+			item.igst_rate = row.custom_igst_rate
+
+	# ---------------------------------------------------------
+	# 5. Determine GST rates across all items (same validation as Dish)
+	# ---------------------------------------------------------
+	cgst_rates, sgst_rates, igst_rates = set(), set(), set()
+
+	for row in source.items:
+		cgst = float(row.custom_cgst_rate or 0)
+		sgst = float(row.custom_sgst_rate or 0)
+		igst = float(row.custom_igst_rate or 0)
+
+		if cgst > 0:
+			cgst_rates.add(cgst)
+		if sgst > 0:
+			sgst_rates.add(sgst)
+		if igst > 0:
+			igst_rates.add(igst)
+
+	if len(cgst_rates) > 1:
+		frappe.throw(
+			f"Proforma Invoice {source.name} contains multiple CGST rates: "
+			f"{', '.join(str(x) for x in sorted(cgst_rates))}%. "
+			"Please use item-level tax configuration for different GST rates."
+		)
+	if len(sgst_rates) > 1:
+		frappe.throw(
+			f"Proforma Invoice {source.name} contains multiple SGST rates: "
+			f"{', '.join(str(x) for x in sorted(sgst_rates))}%. "
+			"Please use item-level tax configuration for different GST rates."
+		)
+	if len(igst_rates) > 1:
+		frappe.throw(
+			f"Proforma Invoice {source.name} contains multiple IGST rates: "
+			f"{', '.join(str(x) for x in sorted(igst_rates))}%. "
+			"Please use item-level tax configuration for different GST rates."
+		)
+
+	cgst_rate = next(iter(cgst_rates), 0)
+	sgst_rate = next(iter(sgst_rates), 0)
+	igst_rate = next(iter(igst_rates), 0)
+
+	# ---------------------------------------------------------
+	# 6. GST Transaction Type
+	# ---------------------------------------------------------
+	tax_category = (source.tax_category or "").strip().lower()
+
+	is_out_state = tax_category in (
+		"out-state", "out state", "out-stage", "out stage",
+		"inter-state", "inter state",
+	)
+	is_in_state = tax_category in (
+		"in-state", "in state", "in-stage", "in stage",
+		"intra-state", "intra state",
+	)
+
+	if not is_out_state and not is_in_state:
+		frappe.throw(
+			f"Invalid Tax Category '{source.tax_category}' in Proforma Invoice {source.name}. "
+			"Expected In-State or Out-State."
+		)
+
+	# ---------------------------------------------------------
+	# 7. Resolve Place of Supply from address text, cross-check tax_category
+	# ---------------------------------------------------------
+	customer_place_of_supply = guess_state_from_address_text(source.address)
+
+	if not customer_place_of_supply:
+		frappe.throw(
+			f"Could not detect a state name in Proforma Invoice {source.name}'s address text "
+			f"('{source.address or ''}'). Please fix the address so GST place of supply "
+			"can be determined before creating a Sales Order."
+		)
+
+	sales_order.place_of_supply = customer_place_of_supply
+	actual_state_code = customer_place_of_supply.split("-")[0]
+	company_state_code = get_company_gst_state(sales_order.company)
+
+	actually_in_state = (actual_state_code == company_state_code)
+	if actually_in_state != is_in_state:
+		frappe.throw(
+			f"Proforma Invoice {source.name}: tax_category says "
+			f"{'In-State' if is_in_state else 'Out-State'}, but the address text "
+			f"resolves to {customer_place_of_supply}, which is "
+			f"{'in-state' if actually_in_state else 'out-state'}. "
+			"Please fix the address or tax_category."
+		)
+
+	# ---------------------------------------------------------
+	# 8. Add GST Taxes
+	# ---------------------------------------------------------
+	if is_out_state:
+		if igst_rate <= 0:
+			if cgst_rate > 0 and sgst_rate > 0:
+				igst_rate = cgst_rate + sgst_rate
+			else:
+				frappe.throw(
+					f"Proforma Invoice {source.name} is marked as Out-State "
+					"but no valid IGST rate was found."
+				)
+
+		sales_order.append("taxes", {
+			"charge_type": "On Net Total",
+			"account_head": "Output Tax IGST - EUPL",
+			"description": f"IGST {igst_rate}%",
+			"rate": igst_rate,
+		})
+
+	elif is_in_state:
+		if cgst_rate <= 0 or sgst_rate <= 0:
+			if igst_rate > 0:
+				cgst_rate = igst_rate / 2
+				sgst_rate = igst_rate / 2
+			else:
+				frappe.throw(
+					f"Proforma Invoice {source.name} is marked as In-State "
+					"but valid CGST/SGST rates were not found."
+				)
+
+		sales_order.append("taxes", {
+			"charge_type": "On Net Total",
+			"account_head": "Output Tax CGST - EUPL",
+			"description": f"CGST {cgst_rate}%",
+			"rate": cgst_rate,
+		})
+		sales_order.append("taxes", {
+			"charge_type": "On Net Total",
+			"account_head": "Output Tax SGST - EUPL",
+			"description": f"SGST {sgst_rate}%",
+			"rate": sgst_rate,
+		})
+
+	# ---------------------------------------------------------
+	# 9. Custom GST Total
+	# ---------------------------------------------------------
+	if hasattr(sales_order, "custom_total_gst"):
+		sales_order.custom_total_gst = source.total_gst or 0
+
+	# ---------------------------------------------------------
+	# 10. Insert the Sales Order
+	# ---------------------------------------------------------
+	sales_order.insert(ignore_permissions=True)
+
+	sales_order.add_comment(
+		"Info",
+		f"Auto-created from Proforma Invoice {source.name}"
+	)
+
+	frappe.msgprint(
+		f"Sales Order {sales_order.name} created successfully."
+	)
+
+	return sales_order.name
