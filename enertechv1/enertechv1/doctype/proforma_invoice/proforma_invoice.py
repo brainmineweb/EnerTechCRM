@@ -784,7 +784,7 @@ def make_sales_order(source_name, target_doc=None):
 			"qty": row.quantity,
 			"uom": row.uom,
 			"rate": row.rate,
-			"delivery_date": source.date,
+			"delivery_date": source.delivery_date,
 		})
 
 		if hasattr(item, "cgst_rate") and row.custom_cgst_rate:
