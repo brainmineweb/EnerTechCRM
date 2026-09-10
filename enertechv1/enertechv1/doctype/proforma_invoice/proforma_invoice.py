@@ -765,7 +765,7 @@ def make_sales_order(source_name, target_doc=None):
 	if source.date:
 		sales_order.transaction_date = source.date
 
-	sales_order.delivery_date = source.date
+	sales_order.delivery_date = source.delivery_date
 
 	if source.tax_category:
 		sales_order.tax_category = source.tax_category
