@@ -359,11 +359,11 @@
  "is_submittable": 1,
  "links": [
   {
-   "link_doctype": "Dish",
-   "link_fieldname": "proforma_invoice"
+   "link_doctype": "Sales Order",
+   "link_fieldname": "custom_proforma_invoice"
   }
  ],
- "modified": "2026-08-25 10:21:31.915545",
+ "modified": "2026-09-09 11:15:11.441668",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

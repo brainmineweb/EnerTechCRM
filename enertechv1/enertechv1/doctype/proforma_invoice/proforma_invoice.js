@@ -1,29 +1,18 @@
 frappe.ui.form.on("Proforma Invoice", {
 	refresh(frm) {
-		if (frm.doc.docstatus === 1) {
-			frm.add_custom_button(__('Dish'), function () {
-				frappe.model.open_mapped_doc({
-					// full dotted path to the whitelisted function in proforma_invoice.py
-					// TODO: confirm this matches your actual app name / folder structure
-					method: "enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_dish",
-					frm: frm,
-				});
-			}, __('Create'));
-
-			frm.add_custom_button("Sales Order", () => {
-				frappe.call({
-					method: "enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_sales_order",
-					args: { source_name: frm.doc.name },
-					freeze: true,
-					freeze_message: __("Creating Sales Order..."),
-					callback: (r) => {
-						if (r.message) {
-							frappe.set_route("Form", "Sales Order", r.message);
-						}
+		frm.add_custom_button("Sales Order", () => {
+			frappe.call({
+				method: "enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_sales_order",
+				args: { source_name: frm.doc.name },
+				freeze: true,
+				freeze_message: __("Creating Sales Order..."),
+				callback: (r) => {
+					if (r.message) {
+						frappe.set_route("Form", "Sales Order", r.message);
 					}
-				});
-			}, __("Create"));
-		}
+				}
+			});
+		}, __("Create"));
 	},
 
 

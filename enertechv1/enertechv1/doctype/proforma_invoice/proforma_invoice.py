@@ -742,15 +742,15 @@ def make_sales_order(source_name, target_doc=None):
 	# ---------------------------------------------------------
 	# 2. Prevent duplicate Sales Order from same PI
 	# ---------------------------------------------------------
-	existing_so = frappe.db.exists(
-		"Sales Order",
-		{"custom_proforma_invoice": source.name}
-	)
+	# existing_so = frappe.db.exists(
+	# 	"Sales Order",
+	# 	{"custom_proforma_invoice": source.name}
+	# )
 
-	if existing_so:
-		frappe.throw(
-			f"Sales Order {existing_so} already exists for Proforma Invoice {source.name}."
-		)
+	# if existing_so:
+	# 	frappe.throw(
+	# 		f"Sales Order {existing_so} already exists for Proforma Invoice {source.name}."
+	# 	)
 
 	# ---------------------------------------------------------
 	# 3. Build Sales Order
