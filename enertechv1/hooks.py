@@ -18,7 +18,7 @@ fixtures = [
                 "Quotation Item",
                 "Opportunity",
                 "Sales Order",
-                "Sales Order Item"
+                "Sales Order Item",           
             ]],
         ]
     },
@@ -276,5 +276,6 @@ permission_query_conditions = {
 # }
 doctype_js = {
     "Quotation": "public/js/Quotation.js",
-    "Opportunity": "public/js/Opportunity.js"
+    "Opportunity": "public/js/Opportunity.js",
+    "Sales Order": "public/js/Sales Order.js"
 }

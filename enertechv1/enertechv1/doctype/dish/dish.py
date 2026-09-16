@@ -518,3 +518,123 @@ def make_sales_order(source_name, target_doc=None):
 	)
 
 	return sales_order.name
+
+@frappe.whitelist()
+def create_dishes_from_sales_order(sales_order_name):
+	"""Create one Dish per parent item on the Sales Order, plus one child
+	Dish per child item (Item.custom_is_child_item), numbered under its
+	parent as <parent_dish_no>-a/-b/...
+
+	Parent/child pairing: child's Item.custom_parent_item must equal the
+	item_code of a parent row present on this same Sales Order.
+	"""
+
+	so = frappe.get_doc("Sales Order", sales_order_name)
+
+	if not so.items:
+		frappe.throw(f"Sales Order {so.name} has no items.")
+
+	item_codes = list({row.item_code for row in so.items})
+
+	item_flags = frappe.get_all(
+		"Item",
+		filters={"name": ["in", item_codes]},
+		fields=["name", "custom_is_child_item", "custom_parent_item"],
+	)
+	item_flags_map = {row.name: row for row in item_flags}
+	so_item_codes_present = {row.item_code for row in so.items}
+
+	# ---- Validate every child has its parent present on this SO ----
+	for row in so.items:
+		flags = item_flags_map.get(row.item_code)
+		if flags and flags.custom_is_child_item:
+			parent_code = flags.custom_parent_item
+			if not parent_code or parent_code not in so_item_codes_present:
+				frappe.throw(
+					f"Item '{row.item_code}' on Sales Order {so.name} is marked as a "
+					f"child item, but its parent item '{parent_code or ''}' is not "
+					"present on this Sales Order."
+				)
+
+	pi = frappe.get_doc("Proforma Invoice", so.custom_proforma_invoice) if so.custom_proforma_invoice else None
+	pi_items_by_code = {}
+	if pi:
+		for pi_row in pi.items:
+			pi_items_by_code.setdefault(pi_row.item, []).append(pi_row)
+
+	def build_dish_header(dish):
+		dish.customer = so.customer
+		dish.quotation = so.custom_quotation
+		dish.proforma_invoice = so.custom_proforma_invoice
+		dish.tax_category = so.tax_category
+		dish.date = frappe.utils.today()
+		dish.expected_delivery = so.delivery_date
+		dish.purchase_order_no = so.po_no
+		dish.order_date = so.po_date
+		dish.custom_sales_order = so.name
+		if pi:
+			dish.customer_name = pi.customer_name
+			dish.customer_address = pi.consignee_address
+			dish.buyer_address = pi.address
+			dish.bueyer_gst_no = pi.buyer_gstin
+			dish.customer_gstin = pi.consignee_gstin
+			dish.buyers_email = pi.buyers_email
+			dish.customers_email = pi.customer_email
+
+	def build_item_row(dish, so_row):
+		pi_row = None
+		queue = pi_items_by_code.get(so_row.item_code)
+		if queue:
+			pi_row = queue.pop(0)
+
+		dish.append("items", {
+			"item_code": so_row.item_code,
+			"item_name": so_row.item_name,
+			"qty": so_row.qty,
+			"uom": so_row.uom,
+			"rate": so_row.rate,
+			"amount": so_row.amount,
+			"description": pi_row.description if pi_row else so_row.description,
+			"hsn_code": pi_row.gst_hsn_code if pi_row else None,
+			"warrenty": pi_row.warranty_years if pi_row else None,
+			"cgst_rate": getattr(so_row, "cgst_rate", None),
+			"sgst_rate": getattr(so_row, "sgst_rate", None),
+			"igst_rate": getattr(so_row, "igst_rate", None),
+		})
+
+	# Group child rows by their parent's item_code, preserving SO order
+	children_by_parent = {}
+	for row in so.items:
+		flags = item_flags_map.get(row.item_code)
+		if flags and flags.custom_is_child_item:
+			children_by_parent.setdefault(flags.custom_parent_item, []).append(row)
+
+	created_parents = []
+	created_children = []
+
+	for so_row in so.items:
+		flags = item_flags_map.get(so_row.item_code)
+		if flags and flags.custom_is_child_item:
+			continue  # created alongside its parent below
+
+		parent_dish = frappe.new_doc("Dish")
+		build_dish_header(parent_dish)
+		build_item_row(parent_dish, so_row)
+		parent_dish.insert(ignore_permissions=True)
+		created_parents.append(parent_dish.name)
+
+		for child_row in children_by_parent.get(so_row.item_code, []):
+			child_dish = frappe.new_doc("Dish")
+			build_dish_header(child_dish)
+			child_dish.custom_parent_dish = parent_dish.name
+			build_item_row(child_dish, child_row)
+			child_dish.insert(ignore_permissions=True)
+			created_children.append(child_dish.name)
+
+	frappe.msgprint(
+		f"Created {len(created_parents)} Dish document(s) and "
+		f"{len(created_children)} child Dish document(s): "
+		+ ", ".join(created_parents + created_children)
+	)
+
+	return {"parents": created_parents, "children": created_children}
