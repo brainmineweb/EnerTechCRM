@@ -25,14 +25,10 @@ INDIA_STATE_GST_CODE = {
 
 
 def guess_state_from_address_text(address_text):
-	"""Match the longest state name found in free-text address, to avoid
-	'Uttar Pradesh' matching inside 'Uttarakhand'-type substrings."""
-	text = (address_text or "").lower()
-	matches = [name for name in INDIA_STATE_GST_CODE if name in text]
-	if not matches:
-		return None
-	best = max(matches, key=len)
-	return INDIA_STATE_GST_CODE[best]
+	"""Normalize a state name (as stored on Lead.custom_state) into the
+	'NN-StateName' GST format, e.g. 'Maharashtra' -> '27-Maharashtra'."""
+	text = (address_text or "").strip().lower()
+	return INDIA_STATE_GST_CODE.get(text)
 
 
 def get_company_gst_state(company):
@@ -79,46 +75,59 @@ class Dish(Document):
 	@frappe.whitelist()
 	def generate_series(self):
 		"""
-		Generate Dish number only on submit.
-		Finds the MAX number in the sequence, ignores amended/cancelled docs.
-		Next number = max + 1 (always increments, never reuses gaps).
+
+		Parent Dish (no parent_dish): EUPL/YY/MM/### global running
+		counter, same as before — max existing +1, ignoring cancelled docs.
+
+		Child Dish (parent_dish set): <parent's dish_no>-<letter>,
+		letter increments per parent (a, b, c...) based on how many
+		non-cancelled children that parent already has.
+
+		This works identically whether parent_dish was set because the
+		parent Dish was created in the same batch, or because the child
+		was manually linked to a pre-existing parent Dish — either way
+		we just count that parent's current active children.
 		"""
+		if self.parent_dish:
+			parent_dish_no = frappe.db.get_value("Dish", self.parent_dish, "dish_no")
+
+			if not parent_dish_no:
+				frappe.throw(f"Parent Dish {self.parent_dish} has no dish_no set yet.")
+
+			existing_children = frappe.get_all(
+				"Dish",
+				filters={"parent_dish": self.parent_dish},
+				fields=["docstatus"],
+			)
+			active_count = len([d for d in existing_children if d.docstatus != 2])
+
+			self.dish_no = f"{parent_dish_no}-{chr(ord('a') + active_count)}"
+			return
+
 		today = getdate(nowdate())
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
 		prefix = f"EUPL/{year}/{month}/"
 
-		# Get ALL Dishes for this year/month (including amended ones)
 		all_dishes = frappe.get_all(
 			"Dish",
-			filters=[
-				["dish_no", "like", f"{prefix}%"]
-			],
+			filters=[["dish_no", "like", f"{prefix}%"]],
 			fields=["dish_no", "docstatus"]
 		)
 
 		max_number = 0
-
 		for dish in all_dishes:
-			# Skip amended/cancelled docs (docstatus=2)
 			if dish.docstatus == 2:
 				continue
-
-			# Extract the number from "EUPL/26/01/045"
 			try:
 				parts = dish.dish_no.split("/")
 				if len(parts) == 4:
-					num = int(parts[3])
-					max_number = max(max_number, num)
+					max_number = max(max_number, int(parts[3]))
 			except (ValueError, IndexError):
 				pass
 
-		# Next number is always max + 1
 		next_number = max_number + 1
-		number = f"{next_number:03d}"  # zero-padded to 3 digits
-
-		series = f"{prefix}{number}"
-		self.dish_no = series
+		self.dish_no = f"{prefix}{next_number:03d}"
 
 	def calculate_totals(self):
 		"""
@@ -519,16 +528,14 @@ def make_sales_order(source_name, target_doc=None):
 
 	return sales_order.name
 
+
 @frappe.whitelist()
-def create_dishes_from_sales_order(sales_order_name):
-	"""Create one Dish per parent item on the Sales Order, plus one child
-	Dish per child item (Item.custom_is_child_item), numbered under its
-	parent as <parent_dish_no>-a/-b/...
-
-	Parent/child pairing: child's Item.custom_parent_item must equal the
-	item_code of a parent row present on this same Sales Order.
+def get_sales_order_dish_items(sales_order_name):
+	"""Return the Sales Order's items annotated with child-item info, so
+	the "Create Dish" dialog can show a select-per-row list and flag
+	which child items need a manual parent-Dish link (because their
+	parent item isn't present on this Sales Order at all).
 	"""
-
 	so = frappe.get_doc("Sales Order", sales_order_name)
 
 	if not so.items:
@@ -544,23 +551,120 @@ def create_dishes_from_sales_order(sales_order_name):
 	item_flags_map = {row.name: row for row in item_flags}
 	so_item_codes_present = {row.item_code for row in so.items}
 
-	# ---- Validate every child has its parent present on this SO ----
+	result = []
 	for row in so.items:
+		flags = item_flags_map.get(row.item_code)
+		is_child_item = bool(flags and flags.custom_is_child_item)
+		parent_item_code = flags.custom_parent_item if flags else None
+		parent_present_in_so = bool(
+			parent_item_code and parent_item_code in so_item_codes_present
+		)
+
+		result.append({
+			"row_name": row.name,
+			"item_code": row.item_code,
+			"item_name": row.item_name,
+			"qty": row.qty,
+			"is_child_item": is_child_item,
+			"parent_item_code": parent_item_code,
+			"parent_present_in_so": parent_present_in_so,
+		})
+
+	return result
+
+
+@frappe.whitelist()
+def create_dishes_from_sales_order(sales_order_name, selected_items=None, manual_parent_links=None):
+	"""Create one Dish per selected parent item on the Sales Order, plus
+	one child Dish per selected child item (Item.custom_is_child_item),
+	numbered under its parent as <parent_dish_no>-a/-b/...
+
+	selected_items: list of Sales Order Item row `name`s to create Dish
+		documents for. If omitted, every item on the Sales Order is used
+		(previous behaviour — creates a Dish for everything).
+
+	manual_parent_links: dict of {row_name: parent_dish_name}. For a
+		selected child item whose parent item is NOT also selected/
+		present on this Sales Order, this supplies an existing Dish to
+		link it to instead — the child Dish is created with
+		parent_dish = that Dish, and numbered off it exactly as if the
+		parent had been created in this same batch.
+
+	Parent/child pairing among selected items: child's
+	Item.custom_parent_item must equal the item_code of a parent row
+	also selected on this Sales Order, OR a manual_parent_links entry
+	must be supplied for that row.
+	"""
+
+	selected_items = frappe.parse_json(selected_items) if selected_items else None
+	manual_parent_links = frappe.parse_json(manual_parent_links) if manual_parent_links else {}
+
+	so = frappe.get_doc("Sales Order", sales_order_name)
+
+	if not so.items:
+		frappe.throw(f"Sales Order {so.name} has no items.")
+
+	if selected_items:
+		selected_set = set(selected_items)
+		so_rows = [row for row in so.items if row.name in selected_set]
+	else:
+		so_rows = list(so.items)
+
+	if not so_rows:
+		frappe.throw("No items selected to create Dish documents for.")
+
+	item_codes = list({row.item_code for row in so_rows})
+
+	item_flags = frappe.get_all(
+		"Item",
+		filters={"name": ["in", item_codes]},
+		fields=["name", "custom_is_child_item", "custom_parent_item"],
+	)
+	item_flags_map = {row.name: row for row in item_flags}
+	so_item_codes_present = {row.item_code for row in so_rows}
+
+	# ---- Validate every selected child either has its parent among the
+	# selected rows, or a manual parent-Dish link was supplied ----
+	for row in so_rows:
 		flags = item_flags_map.get(row.item_code)
 		if flags and flags.custom_is_child_item:
 			parent_code = flags.custom_parent_item
-			if not parent_code or parent_code not in so_item_codes_present:
-				frappe.throw(
-					f"Item '{row.item_code}' on Sales Order {so.name} is marked as a "
-					f"child item, but its parent item '{parent_code or ''}' is not "
-					"present on this Sales Order."
-				)
+			parent_in_selection = bool(parent_code and parent_code in so_item_codes_present)
+
+			if not parent_in_selection:
+				linked_parent = manual_parent_links.get(row.name)
+
+				if not linked_parent:
+					frappe.throw(
+						f"Item '{row.item_code}' on Sales Order {so.name} is marked as a "
+						f"child item, but its parent item '{parent_code or ''}' is not "
+						"among the selected items, and no parent Dish was linked."
+					)
+
+				if not frappe.db.exists("Dish", linked_parent):
+					frappe.throw(f"Linked parent Dish '{linked_parent}' does not exist.")
 
 	pi = frappe.get_doc("Proforma Invoice", so.custom_proforma_invoice) if so.custom_proforma_invoice else None
 	pi_items_by_code = {}
 	if pi:
 		for pi_row in pi.items:
 			pi_items_by_code.setdefault(pi_row.item, []).append(pi_row)
+
+	def get_dispatch_state_from_pi(pi):
+		"""Old make_dish resolved dispatch_state from the Lead behind the PI's
+		Quotation. Re-derive it the same way, but don't blow up if the
+		Quotation's party isn't a Lead (e.g. it's a Customer)."""
+		if not pi.quotation:
+			return None
+
+		quotation = frappe.db.get_value("Quotation", pi.quotation, "party_name")
+		if not quotation:
+			return None
+
+		if not frappe.db.exists("Lead", quotation):
+			return None
+
+		return frappe.db.get_value("Lead", quotation, "custom_state")
 
 	def build_dish_header(dish):
 		dish.customer = so.customer
@@ -571,8 +675,10 @@ def create_dishes_from_sales_order(sales_order_name):
 		dish.expected_delivery = so.delivery_date
 		dish.purchase_order_no = so.po_no
 		dish.order_date = so.po_date
-		dish.custom_sales_order = so.name
+		dish.sales_order = so.name
+
 		if pi:
+			# --- already being pulled from PI (unchanged) ---
 			dish.customer_name = pi.customer_name
 			dish.customer_address = pi.consignee_address
 			dish.buyer_address = pi.address
@@ -580,6 +686,24 @@ def create_dishes_from_sales_order(sales_order_name):
 			dish.customer_gstin = pi.consignee_gstin
 			dish.buyers_email = pi.buyers_email
 			dish.customers_email = pi.customer_email
+
+			# --- restored: these came from the old PI -> Dish make_dish,
+			# but were dropped when Dish creation moved to the Sales Order ---
+			dish.buyer = pi.buyer
+			dish.buyers_name = pi.buyer_name
+			dish.buyers_phone_no = pi.buyers_phone_no
+			dish.customer_phone_no = pi.customer_phone_no
+			dish.contact_no = pi.buyers_phone_no
+			dish.gst_no = pi.buyer_gstin
+			dish.warranty = pi.warranty
+			dish.mode_terms_of_payment = pi.modeterms_of_payment
+			dish.mode_of_dispatch = pi.dispatched_through
+			dish.terms_of_delivery = pi.freight_terms
+			dish.invoice_to_name = pi.buyer
+			dish.invoice_to_address = pi.address
+			dish.dispatch_to_name = pi.customer
+			dish.dispatch_to_address = pi.consignee_address
+			dish.dispatch_state = get_dispatch_state_from_pi(pi)
 
 	def build_item_row(dish, so_row):
 		pi_row = None
@@ -602,20 +726,28 @@ def create_dishes_from_sales_order(sales_order_name):
 			"igst_rate": getattr(so_row, "igst_rate", None),
 		})
 
-	# Group child rows by their parent's item_code, preserving SO order
+	# Group child rows by their parent's item_code, preserving SO order.
+	# Rows that are child items but whose parent isn't among the selected
+	# items go to manual_children instead — they'll be linked to the
+	# Dish supplied in manual_parent_links.
 	children_by_parent = {}
-	for row in so.items:
+	manual_children = []
+	for row in so_rows:
 		flags = item_flags_map.get(row.item_code)
 		if flags and flags.custom_is_child_item:
-			children_by_parent.setdefault(flags.custom_parent_item, []).append(row)
+			parent_code = flags.custom_parent_item
+			if parent_code and parent_code in so_item_codes_present:
+				children_by_parent.setdefault(parent_code, []).append(row)
+			else:
+				manual_children.append(row)
 
 	created_parents = []
 	created_children = []
 
-	for so_row in so.items:
+	for so_row in so_rows:
 		flags = item_flags_map.get(so_row.item_code)
 		if flags and flags.custom_is_child_item:
-			continue  # created alongside its parent below
+			continue  # created alongside its parent below, or as a manually-linked child
 
 		parent_dish = frappe.new_doc("Dish")
 		build_dish_header(parent_dish)
@@ -626,10 +758,19 @@ def create_dishes_from_sales_order(sales_order_name):
 		for child_row in children_by_parent.get(so_row.item_code, []):
 			child_dish = frappe.new_doc("Dish")
 			build_dish_header(child_dish)
-			child_dish.custom_parent_dish = parent_dish.name
+			child_dish.parent_dish = parent_dish.name
 			build_item_row(child_dish, child_row)
 			child_dish.insert(ignore_permissions=True)
 			created_children.append(child_dish.name)
+
+	# ---- Manually-linked children (parent item not among selected items) ----
+	for child_row in manual_children:
+		child_dish = frappe.new_doc("Dish")
+		build_dish_header(child_dish)
+		child_dish.parent_dish = manual_parent_links[child_row.name]
+		build_item_row(child_dish, child_row)
+		child_dish.insert(ignore_permissions=True)
+		created_children.append(child_dish.name)
 
 	frappe.msgprint(
 		f"Created {len(created_parents)} Dish document(s) and "

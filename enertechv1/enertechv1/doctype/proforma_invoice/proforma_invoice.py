@@ -859,13 +859,41 @@ def make_sales_order(source_name, target_doc=None):
 	# ---------------------------------------------------------
 	# 7. Resolve Place of Supply from address text, cross-check tax_category
 	# ---------------------------------------------------------
-	customer_place_of_supply = guess_state_from_address_text(source.address)
+	# ---------------------------------------------------------
+	# 7. Resolve Customer's State from Lead.custom_state
+	#    (via Proforma Invoice -> Quotation -> party_name),
+	#    cross-check tax_category
+	# ---------------------------------------------------------
+	if not source.quotation:
+		frappe.throw(
+			f"Proforma Invoice {source.name} has no linked Quotation. "
+			"Cannot determine customer state for GST place of supply."
+		)
+
+	quotation_doc = frappe.get_doc("Quotation", source.quotation)
+
+	if quotation_doc.quotation_to != "Lead" or not quotation_doc.party_name:
+		frappe.throw(
+			f"Quotation {quotation_doc.name} linked to Proforma Invoice {source.name} "
+			"is not linked to a Lead. Cannot determine customer state."
+		)
+
+	lead_state = frappe.db.get_value(
+		"Lead", quotation_doc.party_name, "custom_state"
+	)
+
+	if not lead_state:
+		frappe.throw(
+			f"Lead {quotation_doc.party_name} (linked via Quotation {quotation_doc.name}) "
+			"has no State (custom_state) set. Please set it before creating a Sales Order."
+		)
+
+	customer_place_of_supply = guess_state_from_address_text(lead_state)
 
 	if not customer_place_of_supply:
 		frappe.throw(
-			f"Could not detect a state name in Proforma Invoice {source.name}'s address text "
-			f"('{source.address or ''}'). Please fix the address so GST place of supply "
-			"can be determined before creating a Sales Order."
+			f"Lead {quotation_doc.party_name}'s State ('{lead_state}') is not a recognized "
+			"Indian state. Please correct it before creating a Sales Order."
 		)
 
 	sales_order.place_of_supply = customer_place_of_supply
@@ -876,10 +904,10 @@ def make_sales_order(source_name, target_doc=None):
 	if actually_in_state != is_in_state:
 		frappe.throw(
 			f"Proforma Invoice {source.name}: tax_category says "
-			f"{'In-State' if is_in_state else 'Out-State'}, but the address text "
-			f"resolves to {customer_place_of_supply}, which is "
+			f"{'In-State' if is_in_state else 'Out-State'}, but Lead "
+			f"{quotation_doc.party_name}'s state ({customer_place_of_supply}) is "
 			f"{'in-state' if actually_in_state else 'out-state'}. "
-			"Please fix the address or tax_category."
+			"Please fix the Lead's state or the tax_category."
 		)
 
 	# ---------------------------------------------------------
