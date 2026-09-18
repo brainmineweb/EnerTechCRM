@@ -63,51 +63,89 @@ function populate_payment_table(frm, rows) {
 // ---------------------------------------------------------------------
 // "Create Dish" selection dialog
 //
-// Lists every Sales Order item with a checkbox (checked by default).
-// Child items (Item.custom_is_child_item) whose parent item isn't also
-// on this Sales Order get an extra Link field so the user can point
-// them at an existing, still-open parent Dish. That Dish's name/number
-// is then used to number the new child Dish (see Dish.generate_series).
+// For every item on the Sales Order, the user picks:
+//   1. Whether to create a Dish for it at all.
+//   2. Whether it's a Product (top-level) or a Sub Product.
+//   3. If Sub Product: its parent, chosen from among the OTHER items on
+//      this same Sales Order — or, if the real parent item isn't on
+//      this Sales Order at all, a link to an existing parent Dish.
+//
+// None of this comes from the Item master — it's decided fresh each
+// time this dialog runs, since the same item can be a standalone
+// Product on one Sales Order and a Sub Product of something else on
+// another.
 // ---------------------------------------------------------------------
 function show_create_dish_dialog(frm, items) {
+	// Sanitize a child-table row name into something usable as a Frappe
+	// dialog fieldname (row names are hash-like but let's not assume).
+	const field_key = (row_name) => "r_" + row_name.replace(/[^a-zA-Z0-9]/g, "_");
+
+	const LINK_DISH_VALUE = "__link_existing_dish__";
+
 	const fields = [
 		{
 			fieldtype: "HTML",
 			fieldname: "info",
 			options:
-				"<p>Select the items you want to create Dish documents for. " +
-				"Child items whose parent item isn't on this Sales Order need " +
-				"to be linked to an existing parent Dish below.</p>",
+				"<p>Select the items to create Dish documents for. For each " +
+				"Sub Product, pick its parent from the other items on this " +
+				"Sales Order — or, if the parent item isn't on this Sales " +
+				"Order, link it to an existing Dish.</p>",
 		},
 	];
 
 	items.forEach((item) => {
-		const row_key = item.row_name;
-		const needs_manual_parent = item.is_child_item && !item.parent_present_in_so;
+		const row_key = field_key(item.row_name);
 
 		fields.push({
 			fieldtype: "Check",
 			fieldname: `select_${row_key}`,
-			label: `${item.item_code} — ${item.item_name} (Qty: ${item.qty})` +
-				(item.is_child_item ? " [Child Item]" : ""),
+			label: `${item.item_code} — ${item.item_name} (Qty: ${item.qty})`,
 			default: 1,
 		});
 
-		if (needs_manual_parent) {
-			fields.push({
-				fieldtype: "Link",
-				fieldname: `parent_dish_${row_key}`,
-				label: `Link "${item.item_code}" to existing parent Dish`,
-				options: "Dish",
-				depends_on: `eval:doc.select_${row_key}`,
-				get_query: () => ({
-					filters: {
-						parent_dish: ["in", ["", null]],
-						docstatus: ["!=", 2],
-					},
-				}),
-			});
-		}
+		fields.push({
+			fieldtype: "Select",
+			fieldname: `role_${row_key}`,
+			label: "Type",
+			options: ["Product", "Sub Product"],
+			default: "Product",
+			depends_on: `eval:doc.select_${row_key}`,
+		});
+
+		const other_item_options = items
+			.filter((other) => other.row_name !== item.row_name)
+			.map((other) => ({
+				value: other.row_name,
+				label: `${other.item_code} — ${other.item_name} (Qty: ${other.qty})`,
+			}));
+
+		fields.push({
+			fieldtype: "Autocomplete",
+			fieldname: `parent_choice_${row_key}`,
+			label: "Parent item",
+			options: [
+				...other_item_options,
+				{ value: LINK_DISH_VALUE, label: "🔗 Not on this Sales Order — link an existing Dish" },
+			],
+			depends_on: `eval:doc.select_${row_key} && doc.role_${row_key}=="Sub Product"`,
+		});
+
+		fields.push({
+			fieldtype: "Link",
+			fieldname: `parent_dish_${row_key}`,
+			label: `Link "${item.item_code}" to existing parent Dish`,
+			options: "Dish",
+			depends_on:
+				`eval:doc.select_${row_key} && doc.role_${row_key}=="Sub Product" ` +
+				`&& doc.parent_choice_${row_key}=="${LINK_DISH_VALUE}"`,
+			get_query: () => ({
+				filters: {
+					parent_dish: ["in", ["", null]],
+					docstatus: ["!=", 2],
+				},
+			}),
+		});
 	});
 
 	const dialog = new frappe.ui.Dialog({
@@ -117,23 +155,32 @@ function show_create_dish_dialog(frm, items) {
 		primary_action_label: "Create Dish(es)",
 		primary_action(values) {
 			const selected_items = [];
+			const parent_row_links = {};
 			const manual_parent_links = {};
 
 			for (const item of items) {
-				const row_key = item.row_name;
+				const row_key = field_key(item.row_name);
 				if (!values[`select_${row_key}`]) continue;
 
-				selected_items.push(row_key);
+				selected_items.push(item.row_name);
 
-				if (item.is_child_item && !item.parent_present_in_so) {
-					const linked_parent = values[`parent_dish_${row_key}`];
-					if (!linked_parent) {
-						frappe.msgprint(
-							`Please link a parent Dish for child item "${item.item_code}", or unselect it.`
-						);
+				if (values[`role_${row_key}`] !== "Sub Product") continue;
+
+				const choice = values[`parent_choice_${row_key}`];
+				if (!choice) {
+					frappe.msgprint(`Please choose a parent for "${item.item_code}", or set it back to Product.`);
+					return;
+				}
+
+				if (choice === LINK_DISH_VALUE) {
+					const parent_dish = values[`parent_dish_${row_key}`];
+					if (!parent_dish) {
+						frappe.msgprint(`Please select the parent Dish to link "${item.item_code}" to.`);
 						return;
 					}
-					manual_parent_links[row_key] = linked_parent;
+					manual_parent_links[item.row_name] = parent_dish;
+				} else {
+					parent_row_links[item.row_name] = choice;
 				}
 			}
 
@@ -142,11 +189,35 @@ function show_create_dish_dialog(frm, items) {
 				return;
 			}
 
+			// Client-side sanity check: an in-SO parent must also be
+			// selected, and can't itself be a Sub Product.
+			for (const [child_row, parent_row] of Object.entries(parent_row_links)) {
+				const child_item = items.find((i) => i.row_name === child_row);
+				const parent_item = items.find((i) => i.row_name === parent_row);
+
+				if (!selected_items.includes(parent_row)) {
+					frappe.msgprint(
+						`"${child_item.item_code}" is marked as a Sub Product of "${parent_item.item_code}", ` +
+							"but that item isn't selected. Please select it, or link to an existing Dish instead."
+					);
+					return;
+				}
+
+				if (parent_row_links[parent_row] || manual_parent_links[parent_row]) {
+					frappe.msgprint(
+						`"${parent_item.item_code}" is itself marked as a Sub Product — only one level of ` +
+							`nesting is supported, so it can't also be the parent of "${child_item.item_code}".`
+					);
+					return;
+				}
+			}
+
 			frappe.call({
 				method: "enertechv1.enertechv1.doctype.dish.dish.create_dishes_from_sales_order",
 				args: {
 					sales_order_name: frm.doc.name,
 					selected_items: selected_items,
+					parent_row_links: parent_row_links,
 					manual_parent_links: manual_parent_links,
 				},
 				freeze: true,

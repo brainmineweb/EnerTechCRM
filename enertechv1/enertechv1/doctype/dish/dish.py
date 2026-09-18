@@ -531,72 +531,69 @@ def make_sales_order(source_name, target_doc=None):
 
 @frappe.whitelist()
 def get_sales_order_dish_items(sales_order_name):
-	"""Return the Sales Order's items annotated with child-item info, so
-	the "Create Dish" dialog can show a select-per-row list and flag
-	which child items need a manual parent-Dish link (because their
-	parent item isn't present on this Sales Order at all).
+	"""Return the Sales Order's items for the "Create Dish" dialog.
+
+	No Item-master flags are consulted here — Product vs. Sub Product,
+	and which item is whose parent, is decided by the user in the
+	dialog itself, per Dish-creation run, not baked into the Item.
 	"""
 	so = frappe.get_doc("Sales Order", sales_order_name)
 
 	if not so.items:
 		frappe.throw(f"Sales Order {so.name} has no items.")
 
-	item_codes = list({row.item_code for row in so.items})
-
-	item_flags = frappe.get_all(
-		"Item",
-		filters={"name": ["in", item_codes]},
-		fields=["name", "custom_is_child_item", "custom_parent_item"],
-	)
-	item_flags_map = {row.name: row for row in item_flags}
-	so_item_codes_present = {row.item_code for row in so.items}
-
-	result = []
-	for row in so.items:
-		flags = item_flags_map.get(row.item_code)
-		is_child_item = bool(flags and flags.custom_is_child_item)
-		parent_item_code = flags.custom_parent_item if flags else None
-		parent_present_in_so = bool(
-			parent_item_code and parent_item_code in so_item_codes_present
-		)
-
-		result.append({
+	return [
+		{
 			"row_name": row.name,
 			"item_code": row.item_code,
 			"item_name": row.item_name,
 			"qty": row.qty,
-			"is_child_item": is_child_item,
-			"parent_item_code": parent_item_code,
-			"parent_present_in_so": parent_present_in_so,
-		})
-
-	return result
+		}
+		for row in so.items
+	]
 
 
 @frappe.whitelist()
-def create_dishes_from_sales_order(sales_order_name, selected_items=None, manual_parent_links=None):
-	"""Create one Dish per selected parent item on the Sales Order, plus
-	one child Dish per selected child item (Item.custom_is_child_item),
-	numbered under its parent as <parent_dish_no>-a/-b/...
+def create_dishes_from_sales_order(
+	sales_order_name,
+	selected_items=None,
+	parent_row_links=None,
+	manual_parent_links=None,
+):
+	"""Create one Dish per selected "Product" item on the Sales Order,
+	plus one child Dish per selected "Sub Product" item, numbered under
+	its parent as <parent_dish_no>-a/-b/...
+
+	There's no Item-master concept of child/parent items here — every
+	row is a Product by default; the caller (the "Create Dish" dialog)
+	decides per Dish-creation run which rows are Sub Products and what
+	each one's parent is.
 
 	selected_items: list of Sales Order Item row `name`s to create Dish
-		documents for. If omitted, every item on the Sales Order is used
-		(previous behaviour — creates a Dish for everything).
+		documents for. If omitted, every item on the Sales Order is used,
+		all as top-level Products (no hierarchy).
 
-	manual_parent_links: dict of {row_name: parent_dish_name}. For a
-		selected child item whose parent item is NOT also selected/
-		present on this Sales Order, this supplies an existing Dish to
-		link it to instead — the child Dish is created with
-		parent_dish = that Dish, and numbered off it exactly as if the
-		parent had been created in this same batch.
+	parent_row_links: dict of {child_row_name: parent_row_name}, both
+		row `name`s from this same Sales Order. Used when the Sub
+		Product's real parent item is also present (and selected) on
+		this Sales Order — the two Dishes are created together in this
+		same run, with the child numbered off the freshly-created parent.
 
-	Parent/child pairing among selected items: child's
-	Item.custom_parent_item must equal the item_code of a parent row
-	also selected on this Sales Order, OR a manual_parent_links entry
-	must be supplied for that row.
+	manual_parent_links: dict of {child_row_name: parent_dish_name}.
+		Used when the Sub Product's parent item is NOT on this Sales
+		Order (e.g. it belongs to a different Dish entirely) — this
+		supplies an existing, already-created Dish to link the child to
+		instead. The child is numbered off that Dish exactly as if it
+		had been created in this same batch.
+
+	A row may appear in at most one of the two link dicts. Only one
+	level of nesting is supported: a row used as someone's parent via
+	parent_row_links must itself be a plain Product (not itself listed
+	as a child in either dict).
 	"""
 
 	selected_items = frappe.parse_json(selected_items) if selected_items else None
+	parent_row_links = frappe.parse_json(parent_row_links) if parent_row_links else {}
 	manual_parent_links = frappe.parse_json(manual_parent_links) if manual_parent_links else {}
 
 	so = frappe.get_doc("Sales Order", sales_order_name)
@@ -613,36 +610,55 @@ def create_dishes_from_sales_order(sales_order_name, selected_items=None, manual
 	if not so_rows:
 		frappe.throw("No items selected to create Dish documents for.")
 
-	item_codes = list({row.item_code for row in so_rows})
+	so_row_names = {row.name for row in so_rows}
+	so_rows_by_name = {row.name: row for row in so_rows}
 
-	item_flags = frappe.get_all(
-		"Item",
-		filters={"name": ["in", item_codes]},
-		fields=["name", "custom_is_child_item", "custom_parent_item"],
-	)
-	item_flags_map = {row.name: row for row in item_flags}
-	so_item_codes_present = {row.item_code for row in so_rows}
+	# A row can't be linked both ways at once.
+	overlap = set(parent_row_links) & set(manual_parent_links)
+	if overlap:
+		codes = ", ".join(so_rows_by_name[r].item_code for r in overlap if r in so_rows_by_name)
+		frappe.throw(
+			f"Item(s) {codes} were given both an in-Sales-Order parent and a "
+			"linked Dish — pick only one for each."
+		)
 
-	# ---- Validate every selected child either has its parent among the
-	# selected rows, or a manual parent-Dish link was supplied ----
-	for row in so_rows:
-		flags = item_flags_map.get(row.item_code)
-		if flags and flags.custom_is_child_item:
-			parent_code = flags.custom_parent_item
-			parent_in_selection = bool(parent_code and parent_code in so_item_codes_present)
+	child_row_names = set(parent_row_links) | set(manual_parent_links)
 
-			if not parent_in_selection:
-				linked_parent = manual_parent_links.get(row.name)
+	# ---- Validate parent_row_links: parent must be selected, distinct,
+	# and itself a plain Product (only one level of nesting) ----
+	for child_row, parent_row in parent_row_links.items():
+		child_code = so_rows_by_name.get(child_row).item_code if child_row in so_rows_by_name else child_row
 
-				if not linked_parent:
-					frappe.throw(
-						f"Item '{row.item_code}' on Sales Order {so.name} is marked as a "
-						f"child item, but its parent item '{parent_code or ''}' is not "
-						"among the selected items, and no parent Dish was linked."
-					)
+		if child_row not in so_row_names:
+			frappe.throw(f"'{child_code}' is marked as a Sub Product but isn't among the selected items.")
 
-				if not frappe.db.exists("Dish", linked_parent):
-					frappe.throw(f"Linked parent Dish '{linked_parent}' does not exist.")
+		if parent_row == child_row:
+			frappe.throw(f"'{child_code}' can't be marked as a Sub Product of itself.")
+
+		if parent_row not in so_row_names:
+			frappe.throw(
+				f"'{child_code}' was marked as a Sub Product of an item that isn't "
+				"selected to create a Dish for. Please select that item too, or "
+				"link to an existing Dish instead."
+			)
+
+		if parent_row in child_row_names:
+			parent_code = so_rows_by_name[parent_row].item_code
+			frappe.throw(
+				f"'{child_code}' was marked as a Sub Product of '{parent_code}', but "
+				f"'{parent_code}' is itself marked as a Sub Product. Only one level "
+				"of nesting is supported."
+			)
+
+	# ---- Validate manual_parent_links reference real Dishes ----
+	for child_row, parent_dish in manual_parent_links.items():
+		child_code = so_rows_by_name.get(child_row).item_code if child_row in so_rows_by_name else child_row
+
+		if child_row not in so_row_names:
+			frappe.throw(f"'{child_code}' is marked as a Sub Product but isn't among the selected items.")
+
+		if not frappe.db.exists("Dish", parent_dish):
+			frappe.throw(f"Linked parent Dish '{parent_dish}' does not exist.")
 
 	pi = frappe.get_doc("Proforma Invoice", so.custom_proforma_invoice) if so.custom_proforma_invoice else None
 	pi_items_by_code = {}
@@ -726,27 +742,18 @@ def create_dishes_from_sales_order(sales_order_name, selected_items=None, manual
 			"igst_rate": getattr(so_row, "igst_rate", None),
 		})
 
-	# Group child rows by their parent's item_code, preserving SO order.
-	# Rows that are child items but whose parent isn't among the selected
-	# items go to manual_children instead — they'll be linked to the
-	# Dish supplied in manual_parent_links.
-	children_by_parent = {}
-	manual_children = []
-	for row in so_rows:
-		flags = item_flags_map.get(row.item_code)
-		if flags and flags.custom_is_child_item:
-			parent_code = flags.custom_parent_item
-			if parent_code and parent_code in so_item_codes_present:
-				children_by_parent.setdefault(parent_code, []).append(row)
-			else:
-				manual_children.append(row)
+	# Group Sub Product rows by their in-Sales-Order parent row name,
+	# preserving SO order. Rows not appearing in either link dict are
+	# plain, top-level Products.
+	children_by_parent_row = {}
+	for child_row, parent_row in parent_row_links.items():
+		children_by_parent_row.setdefault(parent_row, []).append(child_row)
 
 	created_parents = []
 	created_children = []
 
 	for so_row in so_rows:
-		flags = item_flags_map.get(so_row.item_code)
-		if flags and flags.custom_is_child_item:
+		if so_row.name in child_row_names:
 			continue  # created alongside its parent below, or as a manually-linked child
 
 		parent_dish = frappe.new_doc("Dish")
@@ -755,20 +762,20 @@ def create_dishes_from_sales_order(sales_order_name, selected_items=None, manual
 		parent_dish.insert(ignore_permissions=True)
 		created_parents.append(parent_dish.name)
 
-		for child_row in children_by_parent.get(so_row.item_code, []):
+		for child_row_name in children_by_parent_row.get(so_row.name, []):
 			child_dish = frappe.new_doc("Dish")
 			build_dish_header(child_dish)
 			child_dish.parent_dish = parent_dish.name
-			build_item_row(child_dish, child_row)
+			build_item_row(child_dish, so_rows_by_name[child_row_name])
 			child_dish.insert(ignore_permissions=True)
 			created_children.append(child_dish.name)
 
-	# ---- Manually-linked children (parent item not among selected items) ----
-	for child_row in manual_children:
+	# ---- Manually-linked children (parent item not on this Sales Order) ----
+	for child_row_name, parent_dish_name in manual_parent_links.items():
 		child_dish = frappe.new_doc("Dish")
 		build_dish_header(child_dish)
-		child_dish.parent_dish = manual_parent_links[child_row.name]
-		build_item_row(child_dish, child_row)
+		child_dish.parent_dish = parent_dish_name
+		build_item_row(child_dish, so_rows_by_name[child_row_name])
 		child_dish.insert(ignore_permissions=True)
 		created_children.append(child_dish.name)
 
