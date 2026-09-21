@@ -30,7 +30,8 @@ fixtures = [
     "Print Format",
     "Report",
     "Custom DocPerm",
-    "Translation"
+    "Translation",
+    "workspace"
 ]
 
 

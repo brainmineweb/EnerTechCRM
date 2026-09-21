@@ -1,4 +1,3 @@
-
 frappe.query_reports["Quotation Master Report"] = {
     filters: [
         {
@@ -49,5 +48,22 @@ frappe.query_reports["Quotation Master Report"] = {
             options: "\nCold\nHot\nWarm\nLost",
             reqd: 0
         }
-    ]
+    ],
+
+    onload: function (report) {
+        // These roles can see data of all sales persons
+        const isPrivileged =
+            frappe.session.user === "Administrator" ||
+            frappe.user.has_role("System Manager") ||
+            frappe.user.has_role("Sales Manager");
+
+        if (!isPrivileged) {
+            // Auto-set the logged-in user and make the filter read-only
+            report.set_filter_value("sales_person", frappe.session.user);
+
+            const f = report.get_filter("sales_person");
+            f.df.read_only = 1;
+            f.refresh();
+        }
+    }
 };

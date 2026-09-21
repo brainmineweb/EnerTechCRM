@@ -589,7 +589,7 @@ def make_dish(source_name, target_doc=None):
 	dish.customer_phone_no = proforma_invoice.customer_phone_no
 	dish.customer_gstin = proforma_invoice.consignee_gstin
 	dish.customer_address = proforma_invoice.consignee_address
-	dish.delivery_date = proforma_invoice.delivery_date
+	dish.delivery_date = proforma_invoice.delivery_date or proforma_invoice.date
 	dish.proforma_invoice = proforma_invoice.name
 	dish.buyers_email = proforma_invoice.buyers_email
 	dish.customers_email = proforma_invoice.customer_email
@@ -765,7 +765,7 @@ def make_sales_order(source_name, target_doc=None):
 	if source.date:
 		sales_order.transaction_date = source.date
 
-	sales_order.delivery_date = source.delivery_date
+	sales_order.delivery_date = source.delivery_date or source.date
 
 	if source.tax_category:
 		sales_order.tax_category = source.tax_category

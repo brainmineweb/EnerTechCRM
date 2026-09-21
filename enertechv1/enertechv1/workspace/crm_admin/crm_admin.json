@@ -272,7 +272,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-09-21 10:48:44.899536",
+ "modified": "2026-09-21 12:13:07.288042",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "CRM Admin",
@@ -285,9 +285,6 @@
  "roles": [
   {
    "role": "Owner"
-  },
-  {
-   "role": "Sales Person"
   }
  ],
  "sequence_id": 17.1,

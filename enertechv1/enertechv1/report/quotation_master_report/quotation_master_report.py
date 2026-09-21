@@ -1,8 +1,24 @@
 import frappe
 
+# Users with these roles can see all sales persons' data.
+# All other users can only see their own data.
+PRIVILEGED_ROLES = {"System Manager", "Sales Manager"}
+
 
 def execute(filters=None):
     filters = frappe._dict(filters or {})
+
+    # -----------------------------------------
+    # USER RESTRICTION (server-side)
+    # If the user is not Administrator / System Manager / Sales Manager,
+    # force the Sales Person filter to the logged-in user.
+    # This overrides any value changed from the UI.
+    # -----------------------------------------
+
+    if frappe.session.user != "Administrator" and not (
+        set(frappe.get_roles()) & PRIVILEGED_ROLES
+    ):
+        filters.sales_person = frappe.session.user
 
     conditions = []
     values = {}
@@ -30,7 +46,7 @@ def execute(filters=None):
     # -----------------------------------------
     # LATEST INQUIRY STATUS
     # -----------------------------------------
-    
+
     if filters.get("latest_inquiry_status"):
         conditions.append("o.custom_latest_inquiry_status = %(latest_inquiry_status)s")
         values["latest_inquiry_status"] = filters.get("latest_inquiry_status")
@@ -203,6 +219,18 @@ def execute(filters=None):
             "width": 140
         },
         {
+            "label": "Reference Given",
+            "fieldname": "reference_given",
+            "fieldtype": "Data",
+            "width": 150
+        },
+        {
+            "label": "Critical Need",
+            "fieldname": "critical_need",
+            "fieldtype": "Data",
+            "width": 200
+        },
+        {
             "label": "Opportunity Status",
             "fieldname": "opportunity_status",
             "fieldtype": "Data",
@@ -354,6 +382,18 @@ def execute(filters=None):
                 THEN o.expected_closing
                 ELSE NULL
             END AS expected_closing_date,
+
+            CASE
+                WHEN qi.idx = 1 OR qi.idx IS NULL
+                THEN o.custom_reference__given
+                ELSE ''
+            END AS reference_given,
+
+            CASE
+                WHEN qi.idx = 1 OR qi.idx IS NULL
+                THEN o.custom_critical_need
+                ELSE ''
+            END AS critical_need,
 
             CASE
                 WHEN qi.idx = 1 OR qi.idx IS NULL
