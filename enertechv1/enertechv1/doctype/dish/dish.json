@@ -359,7 +359,7 @@
    "fieldname": "terms_of_delivery",
    "fieldtype": "Select",
    "label": "Terms of Delivery",
-   "options": "Extra\nTo Pay\nIncluded, Paid"
+   "options": "Extra\nTo Pay\nIncluded\nPaid"
   },
   {
    "fieldname": "dispatch_state",
@@ -808,7 +808,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-17 11:16:50.888377",
+ "modified": "2026-09-22 13:24:34.762305",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish",

@@ -1,20 +1,23 @@
+
 frappe.ui.form.on("Proforma Invoice", {
 	refresh(frm) {
-		frm.add_custom_button("Sales Order", () => {
-			frappe.call({
-				method: "enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_sales_order",
-				args: { source_name: frm.doc.name },
-				freeze: true,
-				freeze_message: __("Creating Sales Order..."),
-				callback: (r) => {
-					if (r.message) {
-						frappe.set_route("Form", "Sales Order", r.message);
+		// Only show the button once the doc is saved (i.e., not a new/unsaved doc)
+		if (!frm.is_new()) {
+			frm.add_custom_button("Sales Order", () => {
+				frappe.call({
+					method: "enertechv1.enertechv1.doctype.proforma_invoice.proforma_invoice.make_sales_order",
+					args: { source_name: frm.doc.name },
+					freeze: true,
+					freeze_message: __("Creating Sales Order..."),
+					callback: (r) => {
+						if (r.message) {
+							frappe.set_route("Form", "Sales Order", r.message);
+						}
 					}
-				}
-			});
-		}, __("Create"));
+				});
+			}, __("Create"));
+		}
 	},
-
 
 	customer_same_as_consignee(frm) {
 		if (frm.doc.customer_same_as_consignee) {

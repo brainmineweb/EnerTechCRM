@@ -278,5 +278,8 @@ permission_query_conditions = {
 doctype_js = {
     "Quotation": "public/js/Quotation.js",
     "Opportunity": "public/js/Opportunity.js",
-    "Sales Order": "public/js/Sales Order.js"
+    "Sales Order": "public/js/Sales Order.js",
+    "Payment Entry": "public/js/Payment Entry.js",
+
+    
 }
