@@ -652,19 +652,15 @@ def create_dish_from_sales_order_item(
 
 	if pi:
 		dish.customer_name = pi.customer_name
-		dish.customer_address = pi.consignee_address
 		dish.buyer_address = pi.address
 		dish.bueyer_gst_no = pi.buyer_gstin
 		dish.customer_gstin = pi.consignee_gstin
 		dish.buyers_email = pi.buyers_email
-		dish.customers_email = pi.customer_email
-
+		dish.buyer_contact_no = pi.buyers_phone_no
+		
 		dish.buyer = pi.buyer
 		dish.buyers_name = pi.buyer_name
 		dish.buyers_phone_no = pi.buyers_phone_no
-		dish.customer_phone_no = pi.customer_phone_no
-		dish.contact_no = pi.buyers_phone_no
-		dish.gst_no = pi.buyer_gstin
 		dish.warranty = pi.warranty
 		dish.mode_terms_of_payment = pi.modeterms_of_payment
 		dish.mode_of_dispatch = pi.dispatched_through
