@@ -1,6 +1,7 @@
+import re
+
 import frappe
 from frappe.model.document import Document
-from frappe.model.naming import getseries
 from frappe.utils import getdate, nowdate, flt
 
 
@@ -22,6 +23,36 @@ INDIA_STATE_GST_CODE = {
 	"dadra and nagar haveli and daman and diu": "26-Dadra and Nagar Haveli and Daman and Diu",
 	"lakshadweep": "31-Lakshadweep",
 }
+
+# Frappe appends "-1", "-2" ... to the name of an amended document.
+AMEND_SUFFIX_RE = re.compile(r"-\d+$")
+
+
+def _strip_amend_suffix(value):
+	"""'EUPL/26/09/007-1'   -> 'EUPL/26/09/007'
+	'EUPL/26/09/007-a-2' -> 'EUPL/26/09/007-a'"""
+	return AMEND_SUFFIX_RE.sub("", value or "")
+
+
+def _existing_names_and_numbers(prefix):
+	"""Return every Dish name and dish_no starting with `prefix`,
+	INCLUDING cancelled ones — a cancelled Dish still exists in the
+	database and still occupies its name, so its number can't be reused."""
+	rows = frappe.db.sql(
+		"""
+		select name, dish_no
+		from `tabDish`
+		where name like %(p)s or dish_no like %(p)s
+		""",
+		{"p": prefix + "%"},
+		as_dict=True,
+	)
+
+	values = []
+	for r in rows:
+		values.append(r.name or "")
+		values.append(r.dish_no or "")
+	return values
 
 
 def guess_state_from_address_text(address_text):
@@ -67,66 +98,93 @@ class Dish(Document):
 		self.calculate_totals()
 
 	def before_insert(self):
-		self.generate_series()
+		# -------------------------------------------------------------
+		# Amended Dish (e.g. EUPL/26/09/007 cancelled -> EUPL/26/09/007-1)
+		# Keep the ORIGINAL number instead of generating a new one.
+		# Frappe itself names the document <original>-1.
+		# -------------------------------------------------------------
+		if self.amended_from:
+			original = frappe.db.get_value(
+				"Dish",
+				self.amended_from,
+				["dish_no", "sales_order", "parent_dish"],
+				as_dict=True,
+			) or {}
 
-		
+			self.dish_no = _strip_amend_suffix(
+				original.get("dish_no") or self.amended_from
+			)
+
+			if not self.sales_order and original.get("sales_order"):
+				self.sales_order = original.get("sales_order")
+
+			if not self.parent_dish and original.get("parent_dish"):
+				self.parent_dish = original.get("parent_dish")
+
+			return
+
+		self.generate_series()
 
 	@frappe.whitelist()
 	def generate_series(self):
 		"""
+		Parent Dish (no parent_dish): EUPL/YY/MM/### — highest existing
+		number + 1.
 
-		Parent Dish (no parent_dish): EUPL/YY/MM/### global running
-		counter, same as before — max existing +1, ignoring cancelled docs.
+		Child Dish (parent_dish set): <parent's base dish_no>-a / -b / -c ...
+		— next letter after the highest letter already used for that parent.
 
-		Child Dish (parent_dish set): <parent's dish_no>-<letter>,
-		letter increments per parent (a, b, c...) based on how many
-		non-cancelled children that parent already has.
-
-		This works identically whether parent_dish was set because the
-		parent Dish was created in the same batch, or because the child
-		was manually linked to a pre-existing parent Dish — either way
-		we just count that parent's current active children.
+		Cancelled and amended Dishes ARE counted, because their names
+		still exist in the database. Amendment suffixes (-1, -2 ...) are
+		ignored when reading numbers, so 007, 007-1, 007-a, 007-a-1 all
+		count as number 007.
 		"""
+		# ---------------------------------------------------------
+		# Child Dish
+		# ---------------------------------------------------------
 		if self.parent_dish:
 			parent_dish_no = frappe.db.get_value("Dish", self.parent_dish, "dish_no")
 
 			if not parent_dish_no:
 				frappe.throw(f"Parent Dish {self.parent_dish} has no dish_no set yet.")
 
-			existing_children = frappe.get_all(
-				"Dish",
-				filters={"parent_dish": self.parent_dish},
-				fields=["docstatus"],
+			base = _strip_amend_suffix(parent_dish_no)
+			child_prefix = f"{base}-"
+			pattern = re.compile(
+				r"^" + re.escape(child_prefix) + r"([a-z])(?:-\d+)?$"
 			)
-			active_count = len([d for d in existing_children if d.docstatus != 2])
 
-			self.dish_no = f"{parent_dish_no}-{chr(ord('a') + active_count)}"
+			max_idx = -1
+			for value in _existing_names_and_numbers(child_prefix):
+				m = pattern.match(value)
+				if m:
+					max_idx = max(max_idx, ord(m.group(1)) - ord("a"))
+
+			next_idx = max_idx + 1
+			if next_idx > 25:
+				frappe.throw(
+					f"Parent Dish {self.parent_dish} already has 26 sub products (a–z)."
+				)
+
+			self.dish_no = f"{child_prefix}{chr(ord('a') + next_idx)}"
 			return
 
+		# ---------------------------------------------------------
+		# Parent Dish
+		# ---------------------------------------------------------
 		today = getdate(nowdate())
 		year = str(today.year)[2:]
 		month = f"{today.month:02d}"
 		prefix = f"EUPL/{year}/{month}/"
-
-		all_dishes = frappe.get_all(
-			"Dish",
-			filters=[["dish_no", "like", f"{prefix}%"]],
-			fields=["dish_no", "docstatus"]
-		)
+		pattern = re.compile(r"^" + re.escape(prefix) + r"(\d+)")
 
 		max_number = 0
-		for dish in all_dishes:
-			if dish.docstatus == 2:
-				continue
-			try:
-				parts = dish.dish_no.split("/")
-				if len(parts) == 4:
-					max_number = max(max_number, int(parts[3]))
-			except (ValueError, IndexError):
-				pass
+		for value in _existing_names_and_numbers(prefix):
+			m = pattern.match(value)
+			if m:
+				max_number = max(max_number, int(m.group(1)))
 
-		next_number = max_number + 1
-		self.dish_no = f"{prefix}{next_number:03d}"
+		self.dish_no = f"{prefix}{max_number + 1:03d}"
 
 	def calculate_totals(self):
 		"""
@@ -575,6 +633,44 @@ def get_sales_order_dish_items(sales_order_name):
 
 
 @frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def parent_dish_query(doctype, txt, searchfield, start, page_len, filters):
+	"""Link-field query for the "Parent Dish" picker in the Create Dish dialog.
+
+	Shows only top-level (non Sub Product), non-cancelled Dishes —
+	including amended ones like EUPL/26/09/007-1. Dishes belonging to
+	the current Sales Order are listed first.
+	"""
+	filters = filters or {}
+	if isinstance(filters, str):
+		filters = frappe.parse_json(filters)
+
+	return frappe.db.sql(
+		"""
+		select name, dish_no, customer
+		from `tabDish`
+		where docstatus < 2
+			and ifnull(parent_dish, '') = ''
+			and (
+				name like %(txt)s
+				or ifnull(dish_no, '') like %(txt)s
+				or ifnull(customer, '') like %(txt)s
+			)
+		order by
+			(ifnull(sales_order, '') = %(so)s) desc,
+			creation desc
+		limit %(start)s, %(page_len)s
+		""",
+		{
+			"txt": f"%{txt}%",
+			"so": filters.get("sales_order") or "",
+			"start": int(start),
+			"page_len": int(page_len),
+		},
+	)
+
+
+@frappe.whitelist()
 def create_dish_from_sales_order_item(
 	sales_order_name,
 	row_name,
@@ -606,11 +702,20 @@ def create_dish_from_sales_order_item(
 		if not parent_dish:
 			frappe.throw("Please select a parent Dish for this Sub Product.")
 
-		if not frappe.db.exists("Dish", parent_dish):
+		parent_info = frappe.db.get_value(
+			"Dish", parent_dish, ["docstatus", "parent_dish"], as_dict=True
+		)
+
+		if not parent_info:
 			frappe.throw(f"Parent Dish '{parent_dish}' does not exist.")
 
-		existing_parent_link = frappe.db.get_value("Dish", parent_dish, "parent_dish")
-		if existing_parent_link:
+		if parent_info.docstatus == 2:
+			frappe.throw(
+				f"Parent Dish '{parent_dish}' is cancelled. "
+				"Please use its amended version instead."
+			)
+
+		if parent_info.parent_dish:
 			frappe.throw(
 				f"'{parent_dish}' is itself a Sub Product — only one level of "
 				"nesting is supported, so it can't be used as a parent."
@@ -657,7 +762,7 @@ def create_dish_from_sales_order_item(
 		dish.customer_gstin = pi.consignee_gstin
 		dish.buyers_email = pi.buyers_email
 		dish.buyer_contact_no = pi.buyers_phone_no
-		
+
 		dish.buyer = pi.buyer
 		dish.buyers_name = pi.buyer_name
 		dish.buyers_phone_no = pi.buyers_phone_no
