@@ -102,8 +102,6 @@
   "column_break_lemu",
   "mppt",
   "gsm",
-  "rs232_485",
-  "lfp_compatibility",
   "section_break_lnwi",
   "load_details",
   "section_break_szfd",
@@ -120,6 +118,7 @@
   "column_break_hjkx",
   "operation_manual",
   "installation",
+  "engineering_documents",
   "section_break_xquf",
   "price_including_taxes",
   "column_break_uwzj",
@@ -220,7 +219,7 @@
   {
    "fieldname": "bueyer_gst_no",
    "fieldtype": "Data",
-   "label": "Bueyer GST No."
+   "label": "Buyer GST No."
   },
   {
    "fieldname": "buyers_email",
@@ -569,20 +568,8 @@
   {
    "fieldname": "gsm",
    "fieldtype": "Select",
-   "label": "GSM",
-   "options": "\nY\nN"
-  },
-  {
-   "fieldname": "rs232_485",
-   "fieldtype": "Select",
-   "label": "RS 232/485",
-   "options": "\nY\nN"
-  },
-  {
-   "fieldname": "lfp_compatibility",
-   "fieldtype": "Select",
-   "label": "LFP Compatibility",
-   "options": "\nY\nN"
+   "label": "Remote Monitoring",
+   "options": "GSM\nWi-Fi"
   },
   {
    "fieldname": "section_break_lnwi",
@@ -822,13 +809,19 @@
    "fieldname": "customer_same_as_buyer",
    "fieldtype": "Check",
    "label": "Customer Same As Buyer"
+  },
+  {
+   "default": "0",
+   "fieldname": "engineering_documents",
+   "fieldtype": "Check",
+   "label": "Engineering Documents"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-09-24 10:53:39.564085",
+ "modified": "2026-09-28 16:23:50.240458",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish",

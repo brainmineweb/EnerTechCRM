@@ -669,6 +669,7 @@ def make_proforma_invoice(source_name, target_doc=None):
 	proforma_invoice.buyers_email = customer_email
 	proforma_invoice.buyers_phone_no = customer_phone
 	proforma_invoice.address = lead.custom_address
+	proforma_invoice.sales_person_name = quotation.custom_sales_person_name
 	proforma_invoice.total = quotation.total
 	proforma_invoice.total_gst = quotation.custom_total_gst
 	proforma_invoice.total_with_gst = quotation.custom_total_with_gst
@@ -761,6 +762,7 @@ def make_sales_order(source_name, target_doc=None):
 	sales_order.customer = customer
 	sales_order.custom_quotation = source.quotation
 	sales_order.custom_proforma_invoice = source.name
+	sales_order.po_no = source.buyers_order_no   
 
 	if source.date:
 		sales_order.transaction_date = source.date
