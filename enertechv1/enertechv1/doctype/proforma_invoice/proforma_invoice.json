@@ -21,7 +21,6 @@
   "buyer_name",
   "buyers_order_no",
   "buyers_order_date",
-  "buyers_purchase_order_document",
   "buyer_gstin",
   "approval_status",
   "column_break_ltog",
@@ -29,6 +28,8 @@
   "buyers_phone_no",
   "buyers_email",
   "order_confirmation_by",
+  "section_break_lpby",
+  "buyers_po_attachment",
   "section_break_pkwm",
   "customer_same_as_consignee",
   "customer",
@@ -363,9 +364,14 @@
    "label": "Sales Person Name"
   },
   {
-   "fieldname": "buyers_purchase_order_document",
-   "fieldtype": "Attach",
-   "label": "Buyer's Purchase Order Document"
+   "fieldname": "section_break_lpby",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "buyers_po_attachment",
+   "fieldtype": "Table",
+   "label": "Buyer's PO Attachment",
+   "options": "Proforma Invoice POA Item"
   }
  ],
  "grid_page_length": 50,
@@ -377,7 +383,7 @@
    "link_fieldname": "custom_proforma_invoice"
   }
  ],
- "modified": "2026-09-28 16:16:30.673736",
+ "modified": "2026-10-07 15:50:08.017194",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
