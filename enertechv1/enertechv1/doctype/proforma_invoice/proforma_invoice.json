@@ -53,6 +53,8 @@
   "modeterms_of_payment",
   "section_break_zrdu",
   "tax_category",
+  "column_break_rfeb",
+  "payment_type",
   "items_section",
   "items",
   "totals_section",
@@ -372,6 +374,16 @@
    "fieldtype": "Table",
    "label": "Buyer's PO Attachment",
    "options": "Proforma Invoice POA Item"
+  },
+  {
+   "fieldname": "column_break_rfeb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "label": "Payment Type",
+   "options": "Domestic\nInternational"
   }
  ],
  "grid_page_length": 50,
@@ -383,7 +395,7 @@
    "link_fieldname": "custom_proforma_invoice"
   }
  ],
- "modified": "2026-10-07 15:50:08.017194",
+ "modified": "2026-10-08 12:44:16.565452",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",
