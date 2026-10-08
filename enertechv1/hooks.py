@@ -18,7 +18,8 @@ fixtures = [
                 "Quotation Item",
                 "Opportunity",
                 "Sales Order",
-                "Sales Order Item",           
+                "Sales Order Item",
+                "Item"           
             ]],
         ]
     },

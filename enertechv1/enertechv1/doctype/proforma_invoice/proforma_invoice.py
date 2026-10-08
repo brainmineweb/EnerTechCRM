@@ -57,20 +57,37 @@ class ProformaInvoice(Document):
 
 
 	def validate_rate(self):
+
 		# Default status
 		self.approval_status = "Approved"
 
 		# Check every item
 		for row in self.items:
 
-			# Get the selling rate from Item Master
-			selling_rate = frappe.db.get_value(
-				"Item",
-				row.item,
-				"custom_selling_rate"
-			) or 0
+			# Get the selling rate based on warranty period
+			if row.warranty_years == "1 Year":
+				selling_rate_field = "custom_selling_rate_1_year"
 
-			# If any item's rate is less than the Item Master selling rate,
+			elif row.warranty_years == "3 Years":
+				selling_rate_field = "custom_selling_rate_3_year_warrenty"
+
+			elif row.warranty_years == "5 Years":
+				selling_rate_field = "custom_selling_rate_5_year_warrenty"
+
+			else:
+				selling_rate_field = None
+
+			selling_rate = 0
+
+			if selling_rate_field:
+				selling_rate = frappe.db.get_value(
+					"Item",
+					row.item,
+					selling_rate_field
+				) or 0
+
+			# If PI item's rate is less than the
+			# applicable Item Master selling rate,
 			# mark the document as needing approval.
 			if flt(row.rate) < flt(selling_rate):
 				self.approval_status = "Needs Approval"
