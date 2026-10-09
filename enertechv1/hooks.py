@@ -281,6 +281,7 @@ doctype_js = {
     "Opportunity": "public/js/Opportunity.js",
     "Sales Order": "public/js/Sales Order.js",
     "Payment Entry": "public/js/Payment Entry.js",
+    "Lead": "public/js/Lead.js"
 
     
 }

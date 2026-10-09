@@ -1,6 +1,13 @@
 frappe.ui.form.on('Opportunity', {
     refresh: function(frm) {
         set_contact_default(frm);
+        set_opportunity_owner_query(frm);
+    },
+    onload: function(frm){
+        set_opportunity_owner_query(frm)
+    },
+    setup : function(frm){
+        set_opportunity_owner_query(frm)
     }
 });
 
@@ -25,5 +32,13 @@ function set_contact_default(frm) {
         }
     }).catch(err => {
         console.error('Contact fetch failed:', err);
+    });
+}
+
+function set_opportunity_owner_query(frm) {
+    frm.set_query('opportunity_owner', function () {
+        return {
+            query: 'enertechv1.api.get_sales_users'
+        };
     });
 }
