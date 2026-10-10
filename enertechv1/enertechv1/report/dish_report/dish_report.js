@@ -1,6 +1,6 @@
 // Copyright (c) 2026, Brainmine Web Solutions Pvt Ltd
 
-frappe.query_reports["Dish Report"] = {
+frappe.query_reports["DISH Report"] = {
 	filters: [
 		{
 			fieldname: "from_date",
