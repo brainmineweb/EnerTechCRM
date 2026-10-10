@@ -1,7 +1,7 @@
 {
  "charts": [],
  "content": "[{\"id\":\"kb3XPLg8lb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"id\":\"snrzfbFr5Y\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead\",\"col\":3}},{\"id\":\"CPxEyhaf3G\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunity\",\"col\":3}},{\"id\":\"L6Gl31cAcE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Quotation\",\"col\":3}},{\"id\":\"jpYK431-Xq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Proforma Invoice\",\"col\":3}},{\"id\":\"d_KVM1gsf9\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"JVu8-FJZCu\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"nw9bWnpscD\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports List\",\"col\":6}},{\"id\":\"C3RQYMR4AP\",\"type\":\"card\",\"data\":{\"card_name\":\"Quotation Reports\",\"col\":4}}]",
- "creation": "2026-09-21 10:47:44.460640",
+ "creation": "2026-10-09 12:08:15.516337",
  "custom_blocks": [],
  "docstatus": 0,
  "doctype": "Workspace",
@@ -272,7 +272,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-09-21 12:13:07.288042",
+ "modified": "2026-10-10 10:44:14.488821",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "CRM Admin",
