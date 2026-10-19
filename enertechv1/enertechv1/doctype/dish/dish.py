@@ -3,7 +3,7 @@ import re
 import frappe
 from frappe.model.document import Document
 from frappe.utils import getdate, nowdate, flt
-
+from frappe.model.mapper import get_mapped_doc
 
 INDIA_STATE_GST_CODE = {
 	"andhra pradesh": "37-Andhra Pradesh", "arunachal pradesh": "12-Arunachal Pradesh",
@@ -807,3 +807,24 @@ def create_dish_from_sales_order_item(
 	)
 
 	return dish.name
+
+
+@frappe.whitelist()
+def make_replacement(source_name, target_doc=None):
+    src = frappe.get_doc("Dish", source_name)
+    if src.docstatus != 1:
+        frappe.throw("Replacement can only be created from a submitted Dish")
+
+    def set_missing(source, target):
+        target.is_replacement = 1
+        target.replacement_of = source.name
+
+    return get_mapped_doc("Dish", source_name, {
+        "Dish": {
+            "doctype": "Dish",
+            "field_no_map": ["status", "workflow_state", "amended_from",
+                             "replacement_reason", "replacement_remarks"]
+        },
+        # add each child table here if Dish has any, e.g.
+        # "Dish Item": {"doctype": "Dish Item"}
+    }, target_doc, set_missing)

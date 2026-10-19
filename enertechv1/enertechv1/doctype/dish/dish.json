@@ -134,7 +134,12 @@
   "verified_by",
   "manager",
   "section_break_rsyx",
-  "received_by_details"
+  "received_by_details",
+  "replacement_tab",
+  "is_replacement",
+  "section_break_otfv",
+  "replacement_of",
+  "replacement_reason"
  ],
  "fields": [
   {
@@ -819,13 +824,39 @@
    "fieldname": "engineering_documents",
    "fieldtype": "Check",
    "label": "Engineering Documents"
+  },
+  {
+   "fieldname": "replacement_tab",
+   "fieldtype": "Tab Break",
+   "label": "Replacement"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_replacement",
+   "fieldtype": "Check",
+   "label": "Is Replacement"
+  },
+  {
+   "fieldname": "section_break_otfv",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "replacement_of",
+   "fieldtype": "Link",
+   "label": "Replacement Of",
+   "options": "Dish"
+  },
+  {
+   "fieldname": "replacement_reason",
+   "fieldtype": "Small Text",
+   "label": "Replacement Reason"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-10-12 15:06:54.270598",
+ "modified": "2026-10-15 17:57:35.444669",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish",

@@ -3,10 +3,16 @@
 
 frappe.ui.form.on("Dish", {
 	refresh(frm) {
-
+		if (frm.doc.docstatus === 1) {
+			frm.add_custom_button(__("Replacement"), () => {
+				frappe.model.open_mapped_doc({
+					method: "enertechv1.enertechv1.doctype.dish.dish.make_replacement",
+					frm: frm
+				});
+			}, __("Create"));
+		}
 	},
-
-    customer_same_as_buyer(frm) {
+	customer_same_as_buyer(frm) {
 		if (frm.doc.customer_same_as_buyer) {
 			frm.set_value("customer", frm.doc.buyer || "");
 			frm.set_value("customer_name", frm.doc.buyers_name || "");
@@ -19,10 +25,10 @@ frappe.ui.form.on("Dish", {
 			frm.set_value("customer", "");
 			frm.set_value("gst_no", "");
 			frm.set_value("customer_address", "");
-            frm.set_value("contact_no", "");
-            frm.set_value("customers_email", "");
-            frm.set_value("customer_name", "");
-            
+			frm.set_value("contact_no", "");
+			frm.set_value("customers_email", "");
+			frm.set_value("customer_name", "");
+
 		}
 	}
 });
