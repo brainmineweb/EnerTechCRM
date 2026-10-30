@@ -19,7 +19,9 @@ fixtures = [
                 "Opportunity",
                 "Sales Order",
                 "Sales Order Item",
-                "Item"           
+                "Item",
+                "Expense Claim",
+                "Expense Claim Detail"
             ]],
         ]
     },
