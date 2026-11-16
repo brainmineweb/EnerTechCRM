@@ -4,6 +4,8 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import getdate, nowdate, flt
 from frappe.model.mapper import get_mapped_doc
+from enertechv1.enertechv1.api.stock import set_stock_fields
+
 
 INDIA_STATE_GST_CODE = {
 	"andhra pradesh": "37-Andhra Pradesh", "arunachal pradesh": "12-Arunachal Pradesh",
@@ -88,11 +90,30 @@ def get_company_gst_state(company):
 
 	return company_state_code
 
+def derive_tax_category(so):
+	"""Tax Category for a Dish from its Sales Order: use the SO's own value, otherwise
+	compare the place of supply with the company's GST state (In-State / Out-State)."""
+	if so.tax_category:
+		return so.tax_category
+
+	pos_code = (so.place_of_supply or "").split("-")[0].strip()
+	if not pos_code:
+		return None
+
+	try:
+		company_code = str(get_company_gst_state(so.company)).strip()
+	except Exception:
+		return None
+
+	name = "In-State" if pos_code == company_code else "Out-State"
+	return name if frappe.db.exists("Tax Category", name) else None
+
 
 class Dish(Document):
 
 	def validate(self):
 		self.calculate_totals()
+		set_stock_fields(self)
 
 	def before_save(self):
 		self.calculate_totals()
@@ -748,7 +769,12 @@ def create_dish_from_sales_order_item(
 	dish.customer = so.customer
 	dish.quotation = so.custom_quotation
 	dish.proforma_invoice = so.custom_proforma_invoice
-	dish.tax_category = so.tax_category
+	dish.tax_category = derive_tax_category(so)
+	if not dish.tax_category:
+		frappe.throw(
+			f"Could not work out the Tax Category for Sales Order {so.name}. "
+			"Set Tax Category (In-State / Out-State) on the Sales Order, or check its Place of Supply."
+		)
 	dish.date = frappe.utils.today()
 	dish.expected_delivery = so.delivery_date
 	dish.purchase_order_no = so.po_no

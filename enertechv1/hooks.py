@@ -21,9 +21,20 @@ fixtures = [
                 "Sales Order Item",
                 "Item",
                 "Expense Claim",
-                "Expense Claim Detail"
+                "Expense Claim Detail",
+                "Employee",
+                "Warehouse",
+                "Customer Group",
+                "Material Request",
+                "Stock Entry",
+                "Quality Inspection",
+                "Delivery Note",
             ]],
         ]
+    },
+    {
+        "dt": "Role",
+        "filters": [["name", "in", ["Stores Person"]]],
     },
     "Property Setter",
     "Client Script",
@@ -34,7 +45,6 @@ fixtures = [
     "Report",
     "Custom DocPerm",
     "Translation",
-    "workspace"
 ]
 
 
@@ -181,7 +191,37 @@ permission_query_conditions = {
 # 		"on_trash": "method"
 # 	}
 # }
-
+doc_events = {
+    "Material Request": {
+        "on_submit": [
+            "enertechv1.enertechv1.api.stores.on_linked_doc_change",
+            "enertechv1.enertechv1.api.notifications.notify_stores_on_request",
+        ],
+        "on_cancel": "enertechv1.enertechv1.api.stores.on_linked_doc_change",
+        "on_update_after_submit": "enertechv1.enertechv1.api.stores.on_linked_doc_change",
+    },
+    "Stock Entry": {
+        "validate": "enertechv1.enertechv1.api.stores.stock_entry_validate",
+        "on_submit": "enertechv1.enertechv1.api.stores.stock_entry_on_submit",
+        "on_cancel": "enertechv1.enertechv1.api.stores.stock_entry_on_cancel",
+    },
+    "Quality Inspection": {
+        "validate": "enertechv1.enertechv1.api.stores.quality_inspection_validate",
+        "before_submit": "enertechv1.enertechv1.api.stores.quality_inspection_before_submit",
+        "on_submit": "enertechv1.enertechv1.api.stores.quality_inspection_on_submit",
+        "before_cancel": "enertechv1.enertechv1.api.stores.quality_inspection_before_cancel",
+        "on_cancel": "enertechv1.enertechv1.api.stores.quality_inspection_on_cancel",
+    },
+    "Delivery Note": {
+        "validate": "enertechv1.enertechv1.api.stores.delivery_note_validate",
+        "on_submit": [
+            "enertechv1.enertechv1.api.stores.delivery_note_on_submit",
+            "enertechv1.enertechv1.api.returns.on_return_submit",
+        ],
+        "before_cancel": "enertechv1.enertechv1.api.returns.on_return_before_cancel",
+        "on_cancel": "enertechv1.enertechv1.api.stores.on_linked_doc_change",
+    },
+}
 # Scheduled Tasks
 # ---------------
 
@@ -276,14 +316,14 @@ permission_query_conditions = {
 # export_python_type_annotations = True
 
 # default_log_clearing_doctypes = {
-# 	"Logging DocType Name": 30  # days to retain logs
+# 	"Logging DocType Name": 30  # days to retain logsa
 # }
 doctype_js = {
     "Quotation": "public/js/Quotation.js",
     "Opportunity": "public/js/Opportunity.js",
     "Sales Order": "public/js/Sales Order.js",
     "Payment Entry": "public/js/Payment Entry.js",
-    "Lead": "public/js/Lead.js"
-
-    
+    "Lead": "public/js/Lead.js",
+    "Material Request": "public/js/Material Request.js",
+    "Quality Inspection": "public/js/quality_inspection.js",
 }

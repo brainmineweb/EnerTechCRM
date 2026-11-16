@@ -17,6 +17,11 @@
   "parent_dish",
   "sales_order",
   "amended_from",
+  "section_break_jvre",
+  "stores_progress_html",
+  "stock_availability_section",
+  "stock_status",
+  "stock_details",
   "buyer_details_section",
   "buyer",
   "buyer_address",
@@ -25,6 +30,9 @@
   "buyer_contact_no",
   "bueyer_gst_no",
   "buyers_email",
+  "section_break_aitb",
+  "stores_status",
+  "stores_details",
   "section_break_qfry",
   "customer_same_as_buyer",
   "section_break_txou",
@@ -170,8 +178,7 @@
    "fieldname": "proforma_invoice",
    "fieldtype": "Link",
    "label": "Proforma Invoice",
-   "options": "Proforma Invoice",
-   "reqd": 1
+   "options": "Proforma Invoice"
   },
   {
    "fetch_from": "proforma_invoice.quotation",
@@ -850,13 +857,70 @@
    "fieldname": "replacement_reason",
    "fieldtype": "Small Text",
    "label": "Replacement Reason"
+  },
+  {
+   "fieldname": "stock_availability_section",
+   "fieldtype": "Section Break",
+   "label": "Stock Availability",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_status",
+   "fieldtype": "Select",
+   "label": "Stock Status",
+   "options": "Available\nPartial\nNot Available\nAt Exhibition\nPartly Returned\nReturned",
+   "read_only": 1
+  },
+  {
+   "fieldname": "stock_details",
+   "fieldtype": "HTML",
+   "label": "Stock Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_aitb",
+   "fieldtype": "Section Break",
+   "label": "Store Details"
+  },
+  {
+   "fieldname": "stores_status",
+   "fieldtype": "Select",
+   "label": "Stores Status",
+   "options": "\nRequested\nIn QC\nReady for Dispatch\nPartly Rejected\nPartly Delivered\nDelivered"
+  },
+  {
+   "fieldname": "stores_details",
+   "fieldtype": "HTML",
+   "label": "Stores Details"
+  },
+  {
+   "fieldname": "section_break_jvre",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "stores_progress_html",
+   "fieldtype": "HTML",
+   "label": "Stores Progress"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2026-10-15 17:57:35.444669",
+ "links": [
+  {
+   "link_doctype": "Material Request",
+   "link_fieldname": "custom_dish"
+  },
+  {
+   "link_doctype": "Stock Entry",
+   "link_fieldname": "custom_dish"
+  },
+  {
+   "link_doctype": "Quality Inspection",
+   "link_fieldname": "custom_dish"
+  }
+ ],
+ "modified": "2026-11-14 13:05:47.684374",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Dish",

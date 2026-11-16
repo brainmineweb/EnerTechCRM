@@ -1,5 +1,278 @@
 [
  {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [
+   {
+    "default": null,
+    "fieldname": "company",
+    "fieldtype": "Link",
+    "label": "Company",
+    "mandatory": 1,
+    "options": "Company",
+    "parent": "Trial Balance (Simple)",
+    "parentfield": "filters",
+    "parenttype": "Report",
+    "wildcard_filter": 0
+   }
+  ],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-08-28 19:06:54.273322",
+  "module": "Accounts",
+  "name": "Trial Balance (Simple)",
+  "prepared_report": 0,
+  "query": "select fiscal_year as \"Fiscal Year:Data:80\",\n\tcompany as \"Company:Data:220\",\n\tposting_date as \"Posting Date:Date:100\",\n\taccount as \"Account:Data:380\",\n\tsum(debit) as \"Debit:Currency:140\",\n\tsum(credit) as \"Credit:Currency:140\",\n\tfinance_book as \"Finance Book:Link/Finance Book:140\"\nfrom `tabGL Entry`\nwhere is_cancelled = 0 and company = %(company)s\ngroup by fiscal_year, company, posting_date, account\norder by fiscal_year, company, posting_date, account",
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "Trial Balance (Simple)",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Trial Balance (Simple)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Trial Balance (Simple)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Trial Balance (Simple)",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-11-19 15:25:58.567516",
+  "module": "GST India",
+  "name": "Bill of Entry Summary",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Bill of Entry",
+  "reference_report": null,
+  "report_name": "Bill of Entry Summary",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Bill of Entry Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Bill of Entry Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Bill of Entry Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Bill of Entry Summary",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": "{}",
+  "letter_head": null,
+  "modified": "2026-08-26 14:39:19.102191",
+  "module": "Stock",
+  "name": "Incorrect Serial and Batch Bundle",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Serial and Batch Bundle",
+  "reference_report": null,
+  "report_name": "Incorrect Serial and Batch Bundle",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Delivery Manager"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "System Manager"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Delivery User"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Manufacturing Manager"
+   },
+   {
+    "parent": "Incorrect Serial and Batch Bundle",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-10-29 16:19:03.245527",
+  "module": "Enertech HRMS",
+  "name": "Travel Claim Report",
+  "prepared_report": 0,
+  "query": "SELECT\r\n  ec.company AS `Company Name:Link/Company:160`,\r\n  emp.branch AS `Branch Name:Link/Branch:110`,\r\n  ec.name AS `Voucher No:Link/Expense Claim:150`,\r\n  ec.posting_date AS `Voucher Date:Date:100`,\r\n  ec.employee_name AS `Travel Employee Name:Data:170`,\r\n  ec.custom_travel_type AS `Vehicle Type:Link/Travel Type:110`,\r\n  ec.custom_travel_purpose AS `Travel Purpose:Data:120`,\r\n  ec.custom_per_km_rate AS `Per KM Rate:Currency:90`,\r\n  ec.custom_from_date AS `From Date:Date:100`,\r\n  ec.custom_to_date AS `To Date:Date:100`,\r\n  ec.custom_from_location AS `From Location:Data:130`,\r\n  ec.custom_to_location AS `To Location:Data:130`,\r\n  ec.remark AS `Description:Data:180`,\r\n  ec.custom_total_km AS `Total KM:Float:80`,\r\n  SUM(CASE WHEN d.expense_type = 'Conveyance (KM)' THEN d.amount ELSE 0 END) AS `Total KM Amount:Currency:110`,\r\n  MAX(CASE WHEN d.expense_type = 'Conveyance (KM)' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Total KM Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Transport' THEN d.amount ELSE 0 END) AS `Transport:Currency:100`,\r\n  MAX(CASE WHEN d.expense_type = 'Transport' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Transport Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Food' THEN d.amount ELSE 0 END) AS `Food:Currency:90`,\r\n  MAX(CASE WHEN d.expense_type = 'Food' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Food Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Hotel' THEN d.amount ELSE 0 END) AS `Hotel:Currency:90`,\r\n  MAX(CASE WHEN d.expense_type = 'Hotel' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Hotel Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Local Conveyance' THEN d.amount ELSE 0 END) AS `Conveyance:Currency:100`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Local Conveyance' THEN d.description END SEPARATOR '; ') AS `Conveyance Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Local Conveyance' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Conveyance Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Other A' THEN d.amount ELSE 0 END) AS `Other A:Currency:90`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Other A' THEN d.description END SEPARATOR '; ') AS `Other A Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Other A' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Other A Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Other B' THEN d.amount ELSE 0 END) AS `Other B:Currency:90`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Other B' THEN d.description END SEPARATOR '; ') AS `Other B Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Other B' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Other B Path Link:Data:100`,\r\n  ec.total_claimed_amount AS `Total Amount:Currency:110`,\r\n  ec.total_sanctioned_amount AS `Approved Amount:Currency:110`,\r\n  ec.status AS `Status:Data:120`,\r\n  ec.expense_approver AS `Approve/Reject By:Link/User:150`,\r\n  ec.modified AS `Approve/Reject Date:Datetime:150`\r\nFROM `tabExpense Claim` ec\r\nLEFT JOIN `tabExpense Claim Detail` d\r\n  ON d.parent = ec.name AND d.parenttype = 'Expense Claim'\r\nLEFT JOIN `tabEmployee` emp\r\n  ON emp.name = ec.employee\r\nWHERE ec.docstatus < 2\r\n  AND ec.company = %(company)s\r\n  AND ec.posting_date BETWEEN %(from_date)s AND %(to_date)s\r\nGROUP BY ec.name\r\nORDER BY ec.posting_date DESC, ec.name DESC",
+  "ref_doctype": "Expense Claim",
+  "reference_report": "",
+  "report_name": "Travel Claim Report",
+  "report_script": null,
+  "report_type": "Query Report",
+  "roles": [
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Employee"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "HR User"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Owner"
+   },
+   {
+    "parent": "Travel Claim Report",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "HR Supervisor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
   "add_total_row": 0,
   "add_translate_data": 0,
   "columns": [],
@@ -1922,53 +2195,6 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Sales User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2019-01-17 17:20:42.374958",
-  "module": "Accounts",
-  "name": "Trial Balance (Simple)",
-  "prepared_report": 0,
-  "query": "select fiscal_year as \"Fiscal Year:Data:80\",\n\tcompany as \"Company:Data:220\",\n\tposting_date as \"Posting Date:Date:100\",\n\taccount as \"Account:Data:380\",\n\tsum(debit) as \"Debit:Currency:140\",\n\tsum(credit) as \"Credit:Currency:140\",\n\tfinance_book as \"Finance Book:Link/Finance Book:140\"\nfrom `tabGL Entry`\ngroup by fiscal_year, company, posting_date, account\norder by fiscal_year, company, posting_date, account",
-  "ref_doctype": "GL Entry",
-  "reference_report": null,
-  "report_name": "Trial Balance (Simple)",
-  "report_script": null,
-  "report_type": "Query Report",
-  "roles": [
-   {
-    "parent": "Trial Balance (Simple)",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Trial Balance (Simple)",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Trial Balance (Simple)",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
    }
   ],
   "snapshot_report": 0,
@@ -5496,59 +5722,6 @@
   "timeout": 0
  },
  {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2023-05-08 12:24:58.886166",
-  "module": "GST India",
-  "name": "Bill of Entry Summary",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Bill of Entry",
-  "reference_report": null,
-  "report_name": "Bill of Entry Summary",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Bill of Entry Summary",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   },
-   {
-    "parent": "Bill of Entry Summary",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Bill of Entry Summary",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Bill of Entry Summary",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
   "add_total_row": 1,
   "add_translate_data": 0,
   "columns": [],
@@ -6555,95 +6728,6 @@
   ],
   "snapshot_report": 0,
   "timeout": 1500
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": "{}",
-  "letter_head": null,
-  "modified": "2025-02-03 15:39:47.613040",
-  "module": "Stock",
-  "name": "Incorrect Serial and Batch Bundle",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Serial and Batch Bundle",
-  "reference_report": null,
-  "report_name": "Incorrect Serial and Batch Bundle",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock User"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase Manager"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Delivery Manager"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "System Manager"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Delivery User"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Manufacturing User"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock Manager"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Manufacturing Manager"
-   },
-   {
-    "parent": "Incorrect Serial and Batch Bundle",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Maintenance User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
  },
  {
   "add_total_row": 0,
@@ -8046,147 +8130,6 @@
   "javascript": null,
   "json": null,
   "letter_head": null,
-  "modified": "2018-09-07 12:18:21.850851",
-  "module": "Accounts",
-  "name": "Balance Sheet",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "GL Entry",
-  "reference_report": null,
-  "report_name": "Balance Sheet",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Balance Sheet",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Balance Sheet",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Balance Sheet",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2017-02-24 20:12:40.282376",
-  "module": "Accounts",
-  "name": "Profit and Loss Statement",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "GL Entry",
-  "reference_report": null,
-  "report_name": "Profit and Loss Statement",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Profit and Loss Statement",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Profit and Loss Statement",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Profit and Loss Statement",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2017-02-24 20:12:33.520866",
-  "module": "Accounts",
-  "name": "Trial Balance",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "GL Entry",
-  "reference_report": null,
-  "report_name": "Trial Balance",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Trial Balance",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Trial Balance",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Trial Balance",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
   "modified": "2017-02-24 20:12:08.631210",
   "module": "Selling",
   "name": "Customer Credit Balance",
@@ -9239,100 +9182,6 @@
   "javascript": null,
   "json": null,
   "letter_head": null,
-  "modified": "2017-03-06 05:52:06.235584",
-  "module": "Accounts",
-  "name": "Accounts Receivable",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Sales Invoice",
-  "reference_report": null,
-  "report_name": "Accounts Receivable",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Accounts Receivable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Accounts Receivable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2017-02-24 20:09:46.150861",
-  "module": "Accounts",
-  "name": "Accounts Payable",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Purchase Invoice",
-  "reference_report": null,
-  "report_name": "Accounts Payable",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Accounts Payable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Accounts Payable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   },
-   {
-    "parent": "Accounts Payable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Accounts Payable",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
   "modified": "2017-02-24 20:14:35.208989",
   "module": "Accounts",
   "name": "Sales Register",
@@ -9602,47 +9451,6 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Stock User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2021-10-06 06:26:07.881340",
-  "module": "Accounts",
-  "name": "Sales Partners Commission",
-  "prepared_report": 0,
-  "query": "SELECT\n    sales_partner as \"Sales Partner:Link/Sales Partner:220\",\n\tsum(base_net_total) as \"Invoiced Amount (Excl. Tax):Currency:220\",\n\tsum(amount_eligible_for_commission) as \"Amount Eligible for Commission:Currency:220\",\n\tsum(total_commission) as \"Total Commission:Currency:170\",\n\tsum(total_commission)*100/sum(amount_eligible_for_commission) as \"Average Commission Rate:Percent:220\"\nFROM\n\t`tabSales Invoice`\nWHERE\n\tdocstatus = 1 and ifnull(base_net_total, 0) > 0 and ifnull(total_commission, 0) > 0\nGROUP BY\n\tsales_partner\nORDER BY\n\t\"Total Commission:Currency:120\"",
-  "ref_doctype": "Sales Invoice",
-  "reference_report": null,
-  "report_name": "Sales Partners Commission",
-  "report_script": null,
-  "report_type": "Query Report",
-  "roles": [
-   {
-    "parent": "Sales Partners Commission",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Sales Partners Commission",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
    }
   ],
   "snapshot_report": 0,
@@ -10049,365 +9857,6 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Manufacturing User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:14.928929",
-  "module": "Selling",
-  "name": "Quotation Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Quotation",
-  "reference_report": null,
-  "report_name": "Quotation Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Quotation Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales User"
-   },
-   {
-    "parent": "Quotation Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales Manager"
-   },
-   {
-    "parent": "Quotation Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Maintenance Manager"
-   },
-   {
-    "parent": "Quotation Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Maintenance User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:47.049042",
-  "module": "Stock",
-  "name": "Delivery Note Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Delivery Note",
-  "reference_report": null,
-  "report_name": "Delivery Note Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Delivery Note Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock User"
-   },
-   {
-    "parent": "Delivery Note Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock Manager"
-   },
-   {
-    "parent": "Delivery Note Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales User"
-   },
-   {
-    "parent": "Delivery Note Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-20 08:05:46.191588",
-  "module": "Selling",
-  "name": "Sales Order Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Sales Order",
-  "reference_report": null,
-  "report_name": "Sales Order Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Sales Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales User"
-   },
-   {
-    "parent": "Sales Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Sales Manager"
-   },
-   {
-    "parent": "Sales Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Maintenance User"
-   },
-   {
-    "parent": "Sales Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Sales Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:03.622485",
-  "module": "Accounts",
-  "name": "Sales Invoice Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Sales Invoice",
-  "reference_report": null,
-  "report_name": "Sales Invoice Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Sales Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Sales Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:37.416562",
-  "module": "Buying",
-  "name": "Purchase Order Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Purchase Order",
-  "reference_report": null,
-  "report_name": "Purchase Order Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Purchase Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock User"
-   },
-   {
-    "parent": "Purchase Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase Manager"
-   },
-   {
-    "parent": "Purchase Order Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:22.682161",
-  "module": "Stock",
-  "name": "Purchase Receipt Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Purchase Receipt",
-  "reference_report": null,
-  "report_name": "Purchase Receipt Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Purchase Receipt Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock Manager"
-   },
-   {
-    "parent": "Purchase Receipt Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Stock User"
-   },
-   {
-    "parent": "Purchase Receipt Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   },
-   {
-    "parent": "Purchase Receipt Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 1,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2018-02-21 01:28:31.261299",
-  "module": "Accounts",
-  "name": "Purchase Invoice Trends",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "Purchase Invoice",
-  "reference_report": null,
-  "report_name": "Purchase Invoice Trends",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "Purchase Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "Purchase Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Purchase User"
-   },
-   {
-    "parent": "Purchase Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "Purchase Invoice Trends",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
    }
   ],
   "snapshot_report": 0,
@@ -11279,53 +10728,6 @@
     "parentfield": "roles",
     "parenttype": "Report",
     "role": "Manufacturing User"
-   }
-  ],
-  "snapshot_report": 0,
-  "timeout": 0
- },
- {
-  "add_total_row": 0,
-  "add_translate_data": 0,
-  "columns": [],
-  "disable_prepared_report_automation": 0,
-  "disabled": 0,
-  "docstatus": 0,
-  "doctype": "Report",
-  "doctype_to_sync": [],
-  "filters": [],
-  "is_standard": "Yes",
-  "javascript": null,
-  "json": null,
-  "letter_head": null,
-  "modified": "2017-02-24 20:17:51.995451",
-  "module": "Accounts",
-  "name": "General Ledger",
-  "prepared_report": 0,
-  "query": null,
-  "ref_doctype": "GL Entry",
-  "reference_report": null,
-  "report_name": "General Ledger",
-  "report_script": null,
-  "report_type": "Script Report",
-  "roles": [
-   {
-    "parent": "General Ledger",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts User"
-   },
-   {
-    "parent": "General Ledger",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Accounts Manager"
-   },
-   {
-    "parent": "General Ledger",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Auditor"
    }
   ],
   "snapshot_report": 0,
@@ -13179,62 +12581,780 @@
   "doctype": "Report",
   "doctype_to_sync": [],
   "filters": [],
-  "is_standard": "No",
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": "{}",
+  "letter_head": null,
+  "modified": "2026-11-13 17:53:07.473526",
+  "module": "EnerTechv1",
+  "name": "Current Stock Balance",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Bin",
+  "reference_report": null,
+  "report_name": "Current Stock Balance",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Current Stock Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "GL Entry",
+    "parent": "Balance Sheet",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
   "javascript": null,
   "json": null,
-  "letter_head": "Enertech Standard Letterhead",
-  "modified": "2026-10-29 12:01:02.887364",
-  "module": "Enertech HRMS",
-  "name": "Travel Claim Report",
+  "letter_head": null,
+  "modified": "2026-06-22 13:38:25.236839",
+  "module": "Accounts",
+  "name": "Balance Sheet",
   "prepared_report": 0,
-  "query": "SELECT\r\n  ec.company AS `Company Name:Link/Company:160`,\r\n  emp.branch AS `Branch Name:Link/Branch:110`,\r\n  ec.name AS `Voucher No:Link/Expense Claim:150`,\r\n  ec.posting_date AS `Voucher Date:Date:100`,\r\n  ec.employee_name AS `Travel Employee Name:Data:170`,\r\n  ec.custom_travel_type AS `Vehicle Type:Link/Travel Type:110`,\r\n  ec.custom_travel_purpose AS `Travel Purpose:Data:120`,\r\n  ec.custom_per_km_rate AS `Per KM Rate:Currency:90`,\r\n  ec.custom_from_date AS `From Date:Date:100`,\r\n  ec.custom_to_date AS `To Date:Date:100`,\r\n  ec.custom_from_location AS `From Location:Data:130`,\r\n  ec.custom_to_location AS `To Location:Data:130`,\r\n  ec.remark AS `Description:Data:180`,\r\n  ec.custom_total_km AS `Total KM:Float:80`,\r\n  SUM(CASE WHEN d.expense_type = 'Conveyance (KM)' THEN d.amount ELSE 0 END) AS `Total KM Amount:Currency:110`,\r\n  MAX(CASE WHEN d.expense_type = 'Conveyance (KM)' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Total KM Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Transport' THEN d.amount ELSE 0 END) AS `Transport:Currency:100`,\r\n  MAX(CASE WHEN d.expense_type = 'Transport' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Transport Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Food' THEN d.amount ELSE 0 END) AS `Food:Currency:90`,\r\n  MAX(CASE WHEN d.expense_type = 'Food' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Food Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Hotel' THEN d.amount ELSE 0 END) AS `Hotel:Currency:90`,\r\n  MAX(CASE WHEN d.expense_type = 'Hotel' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Hotel Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Local Conveyance' THEN d.amount ELSE 0 END) AS `Conveyance:Currency:100`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Local Conveyance' THEN d.description END SEPARATOR '; ') AS `Conveyance Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Local Conveyance' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Conveyance Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Other A' THEN d.amount ELSE 0 END) AS `Other A:Currency:90`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Other A' THEN d.description END SEPARATOR '; ') AS `Other A Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Other A' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Other A Path Link:Data:100`,\r\n  SUM(CASE WHEN d.expense_type = 'Other B' THEN d.amount ELSE 0 END) AS `Other B:Currency:90`,\r\n  GROUP_CONCAT(CASE WHEN d.expense_type = 'Other B' THEN d.description END SEPARATOR '; ') AS `Other B Remark:Data:200`,\r\n  MAX(CASE WHEN d.expense_type = 'Other B' AND IFNULL(d.custom_bill, '') != '' THEN CONCAT('=HYPERLINK(\"', IF(LEFT(d.custom_bill, 4) = 'http', d.custom_bill, CONCAT('https://brainmineai.in', d.custom_bill)), '\",\"Open\")') END) AS `Other B Path Link:Data:100`,\r\n  ec.total_claimed_amount AS `Total Amount:Currency:110`,\r\n  ec.total_sanctioned_amount AS `Approved Amount:Currency:110`,\r\n  ec.workflow_state AS `Status:Data:120`,\r\n  ec.expense_approver AS `Approve/Reject By:Link/User:150`,\r\n  ec.modified AS `Approve/Reject Date:Datetime:150`\r\nFROM `tabExpense Claim` ec\r\nLEFT JOIN `tabExpense Claim Detail` d\r\n  ON d.parent = ec.name AND d.parenttype = 'Expense Claim'\r\nLEFT JOIN `tabEmployee` emp\r\n  ON emp.name = ec.employee\r\nWHERE ec.docstatus < 2\r\n  AND ec.company = %(company)s\r\n  AND ec.posting_date BETWEEN %(from_date)s AND %(to_date)s\r\nGROUP BY ec.name\r\nORDER BY ec.posting_date DESC, ec.name DESC",
-  "ref_doctype": "Expense Claim",
-  "reference_report": "",
-  "report_name": "Travel Claim Report",
+  "query": null,
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "Balance Sheet",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Balance Sheet",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Balance Sheet",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Balance Sheet",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "GL Entry",
+    "parent": "Profit and Loss Statement",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-07-01 13:36:14.934965",
+  "module": "Accounts",
+  "name": "Profit and Loss Statement",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "Profit and Loss Statement",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Profit and Loss Statement",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Profit and Loss Statement",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Profit and Loss Statement",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "GL Entry",
+    "parent": "Trial Balance",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-07-01 17:32:21.801141",
+  "module": "Accounts",
+  "name": "Trial Balance",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "Trial Balance",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Trial Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Trial Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Trial Balance",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "Payment Ledger Entry",
+    "parent": "Accounts Receivable",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-07-01 13:37:44.167999",
+  "module": "Accounts",
+  "name": "Accounts Receivable",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Accounts Receivable",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Accounts Receivable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Accounts Receivable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "Payment Ledger Entry",
+    "parent": "Accounts Payable",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-07-01 13:37:41.185347",
+  "module": "Accounts",
+  "name": "Accounts Payable",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Purchase Invoice",
+  "reference_report": null,
+  "report_name": "Accounts Payable",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Accounts Payable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Accounts Payable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Accounts Payable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Accounts Payable",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:36:37.619715",
+  "module": "Selling",
+  "name": "Quotation Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Quotation",
+  "reference_report": null,
+  "report_name": "Quotation Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Quotation Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Quotation Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Quotation Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance Manager"
+   },
+   {
+    "parent": "Quotation Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:36:31.552712",
+  "module": "Stock",
+  "name": "Delivery Note Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Delivery Note",
+  "reference_report": null,
+  "report_name": "Delivery Note Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Delivery Note Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Delivery Note Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Delivery Note Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Delivery Note Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:36:21.440118",
+  "module": "Selling",
+  "name": "Sales Order Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Order",
+  "reference_report": null,
+  "report_name": "Sales Order Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Sales Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Sales Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Sales Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Maintenance User"
+   },
+   {
+    "parent": "Sales Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Sales Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:36:13.725601",
+  "module": "Accounts",
+  "name": "Sales Invoice Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Sales Invoice Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Sales Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Sales Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:36:05.561765",
+  "module": "Buying",
+  "name": "Purchase Order Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Purchase Order",
+  "reference_report": null,
+  "report_name": "Purchase Order Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Purchase Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Purchase Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Purchase Order Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:35:57.060786",
+  "module": "Stock",
+  "name": "Purchase Receipt Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Purchase Receipt",
+  "reference_report": null,
+  "report_name": "Purchase Receipt Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Purchase Receipt Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Purchase Receipt Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Purchase Receipt Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Purchase Receipt Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [
+   {
+    "doc_type": "GL Entry",
+    "parent": "General Ledger",
+    "parentfield": "doctype_to_sync",
+    "parenttype": "Report"
+   }
+  ],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-07-01 13:36:06.682661",
+  "module": "Accounts",
+  "name": "General Ledger",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "GL Entry",
+  "reference_report": null,
+  "report_name": "General Ledger",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "General Ledger",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "General Ledger",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "General Ledger",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 1,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2026-03-13 17:35:39.703838",
+  "module": "Accounts",
+  "name": "Purchase Invoice Trends",
+  "prepared_report": 0,
+  "query": null,
+  "ref_doctype": "Purchase Invoice",
+  "reference_report": null,
+  "report_name": "Purchase Invoice Trends",
+  "report_script": null,
+  "report_type": "Script Report",
+  "roles": [
+   {
+    "parent": "Purchase Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Purchase Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Purchase Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Purchase Invoice Trends",
+    "parentfield": "roles",
+    "parenttype": "Report",
+    "role": "Auditor"
+   }
+  ],
+  "snapshot_report": 0,
+  "timeout": 0
+ },
+ {
+  "add_total_row": 0,
+  "add_translate_data": 0,
+  "columns": [],
+  "disable_prepared_report_automation": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Report",
+  "doctype_to_sync": [],
+  "filters": [],
+  "is_standard": "Yes",
+  "javascript": null,
+  "json": null,
+  "letter_head": null,
+  "modified": "2025-07-17 23:16:19.892044",
+  "module": "Accounts",
+  "name": "Sales Partners Commission",
+  "prepared_report": 0,
+  "query": "SELECT\n   sales_partner as \"Sales Partner:Link / Sales Partner:220\",\n   sum(base_net_total) as \"Invoiced Amount (Excl. Tax):Currency:220\",\n   sum(amount_eligible_for_commission) as \"Amount Eligible for Commission:Currency:220\",\n   sum(total_commission) as \"Total Commission:Currency:170\",\n   sum(total_commission)*100 / sum(amount_eligible_for_commission) as \"Average Commission Rate:Percent:220\"\nFROM\n   (\n      SELECT\n         sales_partner,\n         base_net_total,\n         total_commission,\n         amount_eligible_for_commission\n      FROM\n         `tabSales Invoice` \n      WHERE\n         docstatus = 1\n         AND IFNULL(base_net_total, 0) > 0\n         AND IFNULL(total_commission, 0) > 0\n\n      UNION ALL\n\n      SELECT\n         sales_partner,\n         base_net_total,\n         total_commission,\n         amount_eligible_for_commission\n      FROM\n         `tabPOS Invoice`\n      WHERE\n         docstatus = 1\n         AND IFNULL(base_net_total, 0) > 0\n         AND IFNULL(total_commission, 0) > 0\n   ) AS sub\nGROUP BY\n   sales_partner\nORDER BY\n   \"Total Commission:Currency:120\"",
+  "ref_doctype": "Sales Invoice",
+  "reference_report": null,
+  "report_name": "Sales Partners Commission",
   "report_script": null,
   "report_type": "Query Report",
   "roles": [
    {
-    "parent": "Travel Claim Report",
+    "parent": "Sales Partners Commission",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "HR Manager"
+    "role": "Accounts Manager"
    },
    {
-    "parent": "Travel Claim Report",
+    "parent": "Sales Partners Commission",
     "parentfield": "roles",
     "parenttype": "Report",
-    "role": "Expense Approver"
-   },
-   {
-    "parent": "Travel Claim Report",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Employee"
-   },
-   {
-    "parent": "Travel Claim Report",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "HR User"
-   },
-   {
-    "parent": "Travel Claim Report",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Employee Self Service"
-   },
-   {
-    "parent": "Travel Claim Report",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "Owner"
-   },
-   {
-    "parent": "Travel Claim Report",
-    "parentfield": "roles",
-    "parenttype": "Report",
-    "role": "HR Supervisor"
+    "role": "Accounts User"
    }
   ],
   "snapshot_report": 0,
