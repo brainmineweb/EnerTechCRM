@@ -221,6 +221,9 @@ doc_events = {
         "before_cancel": "enertechv1.enertechv1.api.returns.on_return_before_cancel",
         "on_cancel": "enertechv1.enertechv1.api.stores.on_linked_doc_change",
     },
+    "Opportunity": {
+        "validate": "enertechv1.enertechv1.api.opportunity.validate"
+    }
 }
 # Scheduled Tasks
 # ---------------
