@@ -64,6 +64,12 @@
   "total",
   "total_gst",
   "total_with_gst",
+  "section_break_pjzt",
+  "apply_discount_on",
+  "discount_type",
+  "discount_",
+  "discount_amount",
+  "total_after_discount",
   "section_break_eaqt",
   "amended_from"
  ],
@@ -384,6 +390,39 @@
    "fieldtype": "Select",
    "label": "Payment Type",
    "options": "Domestic\nInternational"
+  },
+  {
+   "fieldname": "section_break_pjzt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "discount_type",
+   "fieldtype": "Select",
+   "label": "Discount Type",
+   "options": "Percentage\nAmount"
+  },
+  {
+   "depends_on": "eval:doc.discount_type==\"Percentage\"",
+   "fieldname": "discount_",
+   "fieldtype": "Percent",
+   "label": "Discount (%)"
+  },
+  {
+   "depends_on": "eval:doc.discount_type==\"Amount\"",
+   "fieldname": "discount_amount",
+   "fieldtype": "Currency",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "apply_discount_on",
+   "fieldtype": "Select",
+   "label": "Apply Discount On",
+   "options": "\nNet Total\nGrand Total"
+  },
+  {
+   "fieldname": "total_after_discount",
+   "fieldtype": "Currency",
+   "label": "Total After Discount"
   }
  ],
  "grid_page_length": 50,
@@ -395,7 +434,7 @@
    "link_fieldname": "custom_proforma_invoice"
   }
  ],
- "modified": "2026-10-08 12:44:16.565452",
+ "modified": "2026-11-18 15:27:38.634582",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

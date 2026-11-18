@@ -455,131 +455,120 @@ class ProformaInvoice(Document):
 		self.naming_series = series
 
 
+	def apply_gst_rules(self, item, tax_category):
+		"""Apply In-State / Out-State rate rules to one item (rates only)."""
+
+		if tax_category == "In-State":
+			item.custom_igst_rate = 0
+
+			if not flt(item.custom_cgst_rate):
+				item.custom_cgst_rate = 9
+
+			if not flt(item.custom_sgst_rate):
+				item.custom_sgst_rate = 9
+
+		elif tax_category == "Out-State":
+			item.custom_cgst_rate = 0
+			item.custom_sgst_rate = 0
+
+			if item.custom_igst_rate is None or item.custom_igst_rate == "":
+				item.custom_igst_rate = 18
+
+		else:
+			item.custom_cgst_rate = 0
+			item.custom_sgst_rate = 0
+			item.custom_igst_rate = 0
+
+
 	def calculate_totals(self):
 		"""
-		Recalculate item amounts, GST and Proforma Invoice totals
+		Recalculate item amounts, additional discount, GST and totals
 		every time the document is saved.
 
-		In-State:
-			- CGST + SGST applicable
-			- IGST forced to 0
-
-		Out-State:
-			- IGST applicable
-			- CGST + SGST forced to 0
-
-		Manually entered GST rates are respected and GST amounts
-		are recalculated based on the entered rates.
+		Discount can be applied on:
+			- Net Total   : amount before GST
+			- Grand Total : amount including GST
+		GST is always calculated on the discounted amount.
 		"""
 
-		total = 0
-		total_gst = 0
-
-		# --------------------------------------------------
-		# Get tax category
-		# --------------------------------------------------
 		tax_category = self.tax_category
 
 		# --------------------------------------------------
-		# Calculate every item
+		# PASS 1: item amounts, GST rates, gross totals
 		# --------------------------------------------------
+		total = 0
+		grand_total = 0   # total + GST, before discount
+
 		for item in self.items:
+			item.amount = flt(flt(item.quantity) * flt(item.rate), 2)
 
-			# ----------------------------------------------
-			# Calculate item amount
-			# ----------------------------------------------
-			quantity = flt(item.quantity)
-			rate = flt(item.rate)
+			self.apply_gst_rules(item, tax_category)
 
-			item.amount = quantity * rate
+			gst_rate = (
+				flt(item.custom_cgst_rate)
+				+ flt(item.custom_sgst_rate)
+				+ flt(item.custom_igst_rate)
+			)
 
-			base_amount = flt(item.amount)
+			total += item.amount
+			grand_total += item.amount * (1 + gst_rate / 100)
 
-			# Add to subtotal
-			total += base_amount
+		total = flt(total, 2)
+		grand_total = flt(grand_total, 2)
 
-			# ----------------------------------------------
-			# Reset GST amounts
-			# ----------------------------------------------
-			item.custom_cgst_amount = 0
-			item.custom_sgst_amount = 0
-			item.custom_igst_amount = 0
+		# --------------------------------------------------
+		# Discount
+		# --------------------------------------------------
+		apply_on = self.apply_discount_on or "Net Total"
+		base = grand_total if apply_on == "Grand Total" else total
 
-			# ----------------------------------------------
-			# IN-STATE
-			# ----------------------------------------------
-			if tax_category == "In-State":
+		discount = 0
 
-				# IGST is not applicable for In-State
-				item.custom_igst_rate = 0
-				item.custom_igst_amount = 0
+		if self.discount_type == "Percentage":
+			pct = min(max(flt(self.discount_percentage), 0), 100)
+			discount = flt(base * pct / 100, 2)
+			self.discount_percentage = pct
+			self.discount_amount = discount
 
-				# Default CGST rate if empty or zero
-				if not flt(item.custom_cgst_rate):
-					item.custom_cgst_rate = 9
+		elif self.discount_type == "Amount":
+			discount = min(max(flt(self.discount_amount), 0), base)
+			self.discount_amount = discount
+			self.discount_percentage = (
+				flt(discount / base * 100, 2) if base else 0
+			)
 
-				# Default SGST rate if empty or zero
-				if not flt(item.custom_sgst_rate):
-					item.custom_sgst_rate = 9
+		else:
+			self.discount_percentage = 0
+			self.discount_amount = 0
 
-				# Calculate CGST
-				item.custom_cgst_amount = (
-					base_amount * flt(item.custom_cgst_rate)
-				) / 100
+		# Fraction removed from every item (same for both modes)
+		reduction = discount / base if base else 0
 
-				# Calculate SGST
-				item.custom_sgst_amount = (
-					base_amount * flt(item.custom_sgst_rate)
-				) / 100
+		# --------------------------------------------------
+		# PASS 2: GST amounts on the discounted amount
+		# --------------------------------------------------
+		total_gst = 0
 
-			# ----------------------------------------------
-			# OUT-STATE
-			# ----------------------------------------------
-			elif tax_category == "Out-State":
+		for item in self.items:
+			discounted = flt(item.amount) * (1 - reduction)
 
-				# CGST and SGST are not applicable for Out-State
-				item.custom_cgst_rate = 0
-				item.custom_sgst_rate = 0
+			item.custom_cgst_amount = flt(discounted * flt(item.custom_cgst_rate) / 100, 2)
+			item.custom_sgst_amount = flt(discounted * flt(item.custom_sgst_rate) / 100, 2)
+			item.custom_igst_amount = flt(discounted * flt(item.custom_igst_rate) / 100, 2)
 
-				item.custom_cgst_amount = 0
-				item.custom_sgst_amount = 0
-
-				# Default IGST rate if empty
-				if item.custom_igst_rate is None or item.custom_igst_rate == "":
-					item.custom_igst_rate = 18
-
-				# Calculate IGST
-				item.custom_igst_amount = (
-					base_amount * flt(item.custom_igst_rate)
-				) / 100
-
-			# ----------------------------------------------
-			# No tax category
-			# ----------------------------------------------
-			else:
-				item.custom_cgst_rate = 0
-				item.custom_sgst_rate = 0
-				item.custom_igst_rate = 0
-
-				item.custom_cgst_amount = 0
-				item.custom_sgst_amount = 0
-				item.custom_igst_amount = 0
-
-			# ----------------------------------------------
-			# Add item GST to total GST
-			# ----------------------------------------------
 			total_gst += (
-				flt(item.custom_cgst_amount)
-				+ flt(item.custom_sgst_amount)
-				+ flt(item.custom_igst_amount)
+				item.custom_cgst_amount
+				+ item.custom_sgst_amount
+				+ item.custom_igst_amount
 			)
 
 		# --------------------------------------------------
-		# Update Proforma Invoice totals
+		# Totals
 		# --------------------------------------------------
 		self.total = total
-		self.total_gst = total_gst
-		self.total_with_gst = total + total_gst
+		self.total_after_discount = flt(total * (1 - reduction), 2)
+		self.total_gst = flt(total_gst, 2)
+		self.total_with_gst = flt(self.total_after_discount + self.total_gst, 2)
 
 
 @frappe.whitelist()
