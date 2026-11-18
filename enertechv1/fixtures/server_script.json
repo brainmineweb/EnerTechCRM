@@ -370,7 +370,7 @@
   "doctype_event": "Before Save",
   "enable_rate_limit": 0,
   "event_frequency": "All",
-  "modified": "2026-11-18 16:57:51.933910",
+  "modified": "2026-11-18 16:55:52.940973",
   "module": "EnerTechv1",
   "name": "GST",
   "rate_limit_count": 5,
