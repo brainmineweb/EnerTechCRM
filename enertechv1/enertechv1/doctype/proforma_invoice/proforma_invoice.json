@@ -67,7 +67,7 @@
   "section_break_pjzt",
   "apply_discount_on",
   "discount_type",
-  "discount_",
+  "discount_percentage",
   "discount_amount",
   "total_after_discount",
   "section_break_eaqt",
@@ -393,19 +393,14 @@
   },
   {
    "fieldname": "section_break_pjzt",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "discount_type",
    "fieldtype": "Select",
    "label": "Discount Type",
    "options": "Percentage\nAmount"
-  },
-  {
-   "depends_on": "eval:doc.discount_type==\"Percentage\"",
-   "fieldname": "discount_",
-   "fieldtype": "Percent",
-   "label": "Discount (%)"
   },
   {
    "depends_on": "eval:doc.discount_type==\"Amount\"",
@@ -423,6 +418,12 @@
    "fieldname": "total_after_discount",
    "fieldtype": "Currency",
    "label": "Total After Discount"
+  },
+  {
+   "depends_on": "eval:doc.discount_type==\"Percentage\"",
+   "fieldname": "discount_percentage",
+   "fieldtype": "Percent",
+   "label": "Discount (%)"
   }
  ],
  "grid_page_length": 50,
@@ -434,7 +435,7 @@
    "link_fieldname": "custom_proforma_invoice"
   }
  ],
- "modified": "2026-11-18 15:27:38.634582",
+ "modified": "2026-11-19 18:15:25.726693",
  "modified_by": "Administrator",
  "module": "EnerTechv1",
  "name": "Proforma Invoice",

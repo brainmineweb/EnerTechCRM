@@ -253,16 +253,15 @@ class ProformaInvoice(Document):
 		# =====================================
 		# SALESPERSON
 		# =====================================
-		salesperson_email = frappe.db.get_value(
-			"User",
-			self.owner,
-			"email"
-		)
+		DEFAULT_SENDER = "sales@enertechups.com"
 
 		owner = frappe.get_doc("User", self.owner)
 
+		# Use the owner's email, otherwise fall back to the default sales mailbox
+		salesperson_email = owner.email or DEFAULT_SENDER
+
 		owner_name = owner.full_name or self.owner
-		owner_email = owner.email or ""
+		owner_email = owner.email or DEFAULT_SENDER   # shown in the email signature
 		owner_mobile = owner.mobile_no or ""
 
 		owner_designation = frappe.db.get_value(
